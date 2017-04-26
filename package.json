@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/thebongy/Vote#readme",
   "devDependencies": {
+    "@types/electron": "^1.4.37",
+    "@types/es6-shim": "^0.31.33",
+    "@types/node": "^7.0.13",
     "devtron": "^1.4.0",
     "electron": "^1.6.6"
   },

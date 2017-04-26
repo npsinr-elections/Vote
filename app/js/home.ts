@@ -1,8 +1,7 @@
 'use strict';
 
-let require: any;
-
-const { dialog } = require('electron').remote;
+const {remote, ipcRenderer}:{remote:Electron.Remote, ipcRenderer:Electron.IpcRenderer} = require('electron')
+const {dialog}:{dialog:Electron.Dialog} = remote;
 
 interface newElectionInterface {
     // Describes a newly created election object
@@ -31,13 +30,14 @@ let imageInput = <HTMLInputElement>document.getElementById('imageInput');
 
 // Open file explorer window to select image.
 imageBtn.addEventListener('click', () => {
-    let imagePath: string = dialog.showOpenDialog({
+    let imagePath: string[] = dialog.showOpenDialog({
         properties: ['openFile'],
         filters: [
             { name: 'Images', extensions: ['jpg', 'png', 'gif'] }
         ]
     })
-    imageInput.value = (typeof imagePath != 'undefined') ? imagePath : '';
+    
+    imageInput.value = (typeof imagePath != 'undefined') ? imagePath[0] : '';
 
 })
 
@@ -55,4 +55,5 @@ createElectionBtn.addEventListener('click', () => {
         inputData = <HTMLInputElement>newElectionData[i];
         newElectionObject[inputData.name] = inputData.value;  
     }
+    ipcRenderer.send('newElection',newElectionObject);
 })
