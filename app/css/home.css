@@ -1,0 +1,12 @@
+html,body {
+    color:#FFFFFF;
+    overflow:hidden;
+}
+
+.title, .subtitle {
+    color:#FFFFFF;
+}
+
+.sectionPrompt {
+    color: #363636;
+}

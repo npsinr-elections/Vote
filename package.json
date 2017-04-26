@@ -1,0 +1,27 @@
+{
+  "name": "vote",
+  "version": "0.0.1",
+  "description": "An applications to host elections on a loca server.",
+  "main": "./main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thebongy/Vote.git"
+  },
+  "author": "Rishit Bansal, Muktaka Joshipura, Rachit Verma",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/thebongy/Vote/issues"
+  },
+  "homepage": "https://github.com/thebongy/Vote#readme",
+  "devDependencies": {
+    "devtron": "^1.4.0",
+    "electron": "^1.6.6"
+  },
+  "dependencies": {
+    "electron-debug": "^1.1.0"
+  }
+}

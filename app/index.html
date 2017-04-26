@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Vote</title>
+    <link rel="stylesheet" type="text/css" href="../node_modules/bulma/css/bulma.css">
+    <link rel="stylesheet" type="text/css" href="css/home.css">
+</head>
+
+<body>
+    <section class="hero is-info is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <h1 class="title is-1">
+                    Vote
+                </h1>
+                <h2 class="subtitle">
+                    Elections: Simple. Fast. Easy
+                </h2>
+                <a id='newElectionBtn' class="button is-success is-outlined">New Elections</a>
+                <a id='loadElectionBtn' class="button is-primary is-outlined">Load Elections</a>
+            </div>
+        </div>
+    </section>
+    <div id='newElection' class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>New Election</p>
+                    <button id='closeNewElection' class="delete"></button>
+                </div>
+                <div class="message-body">
+                    <h3 class="title sectionPrompt">What is your election called?</h3>
+                    <div class='field is-horizontal'>
+                        <div class='field-label is-normal'>
+                            <label class='label'>Name</label>
+                        </div>
+                        <div class='field-body'>
+                            <div class='field'>
+                                <p class='control'>
+                                    <input name='name' class='input newElectionData' type="text" placeholder="Give a title for the elections" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='field is-horizontal'>
+                        <div class='field-label is-normal'>
+                            <label class='label'>Desciption</label>
+                        </div>
+                        <div class='field-body'>
+                            <div class='field'>
+                                <p class='control'>
+                                    <textarea name='description' class='textarea newElectionData' type="text" placeholder="Write a subtitle message that will whow during the elections."></textarea>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h3 class="title sectionPrompt">How does it look?</h3>
+                    <div class='field is-horizontal'>
+                        <div class='field-label is-normal'>
+                            <label class='label'>Image</label>
+                        </div>
+                        <div class='field-body'>
+                            <div class='field has-addons'>
+                                <p class='control'>
+                                    <input name='image' id = 'imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
+                                </p>
+                                <p class='control'>
+                                    <button id= 'imageBtn' class='button is-primary'>Upload</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='field is-horizontal'>
+                        <div class='field-label is-normal'>
+                            <label class='label'>Background Color</label>
+                        </div>
+                        <div class='field-body'>
+                            <div class='field has-addons'>
+                                <p class='control'>
+                                    <input name='backColor' id='backColorInput' class='input newElectionData' type="text" placeholder="Background color of title page" disabled />
+                                </p>
+                                <p class='control'>
+                                    <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">Choose color</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='field is-horizontal'>
+                        <div class='field-label is-normal'>
+                            <label class='label'>Font Color</label>
+                        </div>
+                        <div class='field-body'>
+                            <div class='field has-addons'>
+                                <p class='control'>
+                                    <input name='fontColor' id='titleColorInput' class='input newElectionData' type="text" placeholder="Color of font on title page" disabled />
+                                </p>
+                                <p class='control'>
+                                    <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">Choose color</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h3 class="title sectionPrompt">And ...you are done!</h3>
+                    <div class='field'>
+                        <p class='control'>
+                            <button id='createElectionBtn' class="button is-success">Create my Election!</button>
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+    <script src='js/jscolor.min.js'></script>
+    <script src='js/home.js'></script>
+</body>
+
+</html>
