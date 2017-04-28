@@ -1,14 +1,24 @@
-import {app, BrowserWindow, ipcMain} from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import * as path from "path";
 import * as url from "url";
+import * as election from "./model/election";
+import * as crypt from "crypto";
+import * as keytar from "keytar";
+import * as fileManager from "./model/fileManager"
 
-require('electron-debug')(); //ONLY DURING DEVELOPMENT!! (Ctrl+Shift+I:DevTools, Ctrl+R:Reload)
+// require('electron-debug')(); //ONLY DURING DEVELOPMENT!! (Ctrl+Shift+I:DevTools, Ctrl+R:Reload)
 
-let win:Electron.BrowserWindow = null;
+let win: Electron.BrowserWindow = null;
+let editElections: Electron.BrowserWindow = null;
 
-function createHomeWindow () {
-    // Opening the Home Page
-  win = new BrowserWindow({width: 800, height: 600, show:false})
+let appData: election.appDataInterface;
+
+const dataPath:string = app.getPath('userData');
+const appDataFile = 'app_data.json'
+
+function createHomeWindow() {
+  // Opening the Home Page
+  win = new BrowserWindow({ width: 800, height: 600, show: false })
   win.loadURL(url.format({
     pathname: path.join(__dirname, 'app/index.html'),
     protocol: 'file:',
@@ -16,7 +26,7 @@ function createHomeWindow () {
   }))
 
   win.once('ready-to-show', () => {
-      win.show();
+    win.show();
   })
 
   win.on('closed', () => {
@@ -24,9 +34,27 @@ function createHomeWindow () {
   })
 }
 
-app.on('ready', createHomeWindow)
+app.on('ready', () => {
+  // keytar.deletePassword('voteApp','password').then(()=>{console.log('delete success')}, (err)=>{console.log(err)});
+  get_password((password: string) => {
+    if (password !== null) {
+      appData = <election.appDataInterface>(fileManager.readJSONData(appDataFile,password));
+      console.log(appData);
+      createHomeWindow();
+    } else {
+      // Assuming App opened first time.
+      fileManager.resetAllData();
+      let encryptPassword: string = crypt.randomBytes(256).toString('hex');
+      keytar.setPassword('voteApp', 'password', encryptPassword).then(() => {
+        appData = {elections:[]}
+        fileManager.writeJSONData(appDataFile, appData, encryptPassword);
+        createHomeWindow();
+      }, (err) => { console.log(err); })
+    }
 
-// Quit when all windows are closed.
+  })
+})
+
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
@@ -35,15 +63,28 @@ app.on('window-all-closed', () => {
   }
 })
 
-app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createHomeWindow()
-  }
+ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
+  get_password((password: string) => {
+    let loadData:election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile, password);
+    console.log(loadData);
+    // loadElectionWindow(loadData);
+  })
 })
 
+function loadElectionWindow(arg: election.ElectionDataInterface) {
+  editElections = new BrowserWindow({ width: 800, height: 600, show: false })
+  editElections.loadURL(url.format({
+    pathname: path.join(__dirname, 'app/edit.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+  editElections.webContents.on('did-finish-load', () => {
+    editElections.webContents.send('loadElectionData', arg);
+  })
+}
 
-ipcMain.on('newElection', (event, arg) => {
-    console.log(arg);
-})
+function get_password(callback) {
+  keytar.getPassword('voteApp', 'password').then(callback, (err) => {
+    console.log(err);
+  });
+}

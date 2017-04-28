@@ -1,4 +1,7 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+var path = require("path");
+var fileManager = require("./fileManager");
 var Election = (function () {
     function Election(name, desciption, image, fontColor) {
         this.name = name;
@@ -43,4 +46,16 @@ var Candidate = (function () {
     };
     return Candidate;
 }());
+function initNewElection(data, appData, appDataFile, password) {
+    var _a = fileManager.newElectionData(), dataFile = _a.dataFile, imageDir = _a.imageDir, randomDir = _a.randomDir;
+    data['dataDirectory'] = randomDir;
+    data['dataFile'] = dataFile;
+    data['imageData'] = imageDir;
+    data['offices'] = [];
+    fileManager.writeJSONData(path.join(randomDir, dataFile), data, password);
+    appData.elections.push({ name: data.name, dataDirectory: randomDir, dataFile: dataFile });
+    fileManager.writeJSONData(appDataFile, appData, password);
+    return data;
+}
+exports.initNewElection = initNewElection;
 //# sourceMappingURL=election.js.map

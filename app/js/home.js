@@ -1,4 +1,5 @@
 'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
 var _a = require('electron'), remote = _a.remote, ipcRenderer = _a.ipcRenderer;
 var dialog = remote.dialog;
 var newElectionModal = document.getElementById('newElection');

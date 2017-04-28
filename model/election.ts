@@ -1,4 +1,8 @@
 'use strict';
+import * as shortid from "shortid";
+import * as fs from "fs";
+import * as path from "path";
+import * as fileManager from "./fileManager";
 
 class Election {
     offices: Office[];
@@ -10,7 +14,7 @@ class Election {
         this.offices.push(office);
     }
 
-    removeOffice(office: Office):void {
+    removeOffice(office: Office): void {
         let index = this.offices.indexOf(office);
         this.offices.splice(index, 1);
     }
@@ -41,6 +45,43 @@ class Candidate {
     }
 
     vote() {
-        this.votes ++;
+        this.votes++;
     }
+}
+
+export function initNewElection(data: newElectionInterface, appData: appDataInterface, appDataFile:string, password: string): ElectionDataInterface {
+    let { dataFile, imageDir, randomDir } = fileManager.newElectionData();
+
+    data['dataDirectory'] = randomDir;
+    data['dataFile'] = dataFile;
+    data['imageData'] = imageDir;
+    data['offices'] = [];
+
+    fileManager.writeJSONData(path.join(randomDir, dataFile), data, password);
+
+    appData.elections.push({ name: data.name, dataDirectory: randomDir, dataFile: dataFile })
+    
+    fileManager.writeJSONData(appDataFile, appData, password);
+    
+    return <ElectionDataInterface>data;
+}
+
+export interface newElectionInterface {
+    // Describes a newly created election object
+    name: string;
+    description: string;
+    image: string;
+    backColor: string;
+    fontColor: string;
+}
+
+export interface ElectionDataInterface extends newElectionInterface {
+    imageData: string;
+    dataFile: string;
+    dataDirectory: string;
+    offices: Office[];
+}
+
+export interface appDataInterface {
+    elections: { name: string, dataDirectory: string, dataFile: string }[];
 }

@@ -1,17 +1,7 @@
 'use strict';
-
+import {newElectionInterface} from "../../model/election"
 const {remote, ipcRenderer}:{remote:Electron.Remote, ipcRenderer:Electron.IpcRenderer} = require('electron')
 const {dialog}:{dialog:Electron.Dialog} = remote;
-
-interface newElectionInterface {
-    // Describes a newly created election object
-    name:string;
-    description:string;
-    image:string;
-    backColor:string;
-    fontColor:string;
-    [propname: string] :string;
-}
 
 let newElectionModal = <HTMLDivElement>document.getElementById('newElection');
 // Show new election modal popup.

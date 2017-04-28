@@ -65,10 +65,10 @@
                         <div class='field-body'>
                             <div class='field has-addons'>
                                 <p class='control'>
-                                    <input name='image' id = 'imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
+                                    <input name='image' id='imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
                                 </p>
                                 <p class='control'>
-                                    <button id= 'imageBtn' class='button is-primary'>Upload</button>
+                                    <button id='imageBtn' class='button is-primary'>Upload</button>
                                 </p>
                             </div>
                         </div>
@@ -80,7 +80,8 @@
                         <div class='field-body'>
                             <div class='field has-addons'>
                                 <p class='control'>
-                                    <input name='backColor' id='backColorInput' class='input newElectionData' type="text" placeholder="Background color of title page" disabled />
+                                    <input name='backColor' id='backColorInput' class='input newElectionData' type="text" placeholder="Background color of title page"
+                                        disabled />
                                 </p>
                                 <p class='control'>
                                     <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">Choose color</button>
@@ -95,7 +96,8 @@
                         <div class='field-body'>
                             <div class='field has-addons'>
                                 <p class='control'>
-                                    <input name='fontColor' id='titleColorInput' class='input newElectionData' type="text" placeholder="Color of font on title page" disabled />
+                                    <input name='fontColor' id='titleColorInput' class='input newElectionData' type="text" placeholder="Color of font on title page"
+                                        disabled />
                                 </p>
                                 <p class='control'>
                                     <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">Choose color</button>
@@ -114,6 +116,9 @@
             </article>
         </div>
     </div>
+    <script>
+        var exports = {};
+    </script>
     <script src='js/jscolor.min.js'></script>
     <script src='js/home.js'></script>
 </body>
