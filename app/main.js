@@ -12,12 +12,13 @@ var win = null;
 var editElections = null;
 var appData;
 var dataPath = electron_1.app.getPath('userData');
+console.log(dataPath);
 var appDataFile = 'app_data.json';
 function createHomeWindow() {
     // Opening the Home Page
     win = new electron_1.BrowserWindow({ width: 800, height: 600, show: false });
     win.loadURL(url.format({
-        pathname: path.join(__dirname, 'app/index.html'),
+        pathname: path.join(__dirname, 'index.html'),
         protocol: 'file:',
         slashes: true
     }));
@@ -65,7 +66,7 @@ electron_1.ipcMain.on('newElection', function (event, arg) {
 function loadElectionWindow(arg) {
     editElections = new electron_1.BrowserWindow({ width: 800, height: 600, show: false });
     editElections.loadURL(url.format({
-        pathname: path.join(__dirname, 'app/edit.html'),
+        pathname: path.join(__dirname, 'edit.html'),
         protocol: 'file:',
         slashes: true
     }));

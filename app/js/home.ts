@@ -1,5 +1,5 @@
 'use strict';
-import {newElectionInterface} from "../../model/election"
+import {newElectionInterface} from "../model/election"
 const {remote, ipcRenderer}:{remote:Electron.Remote, ipcRenderer:Electron.IpcRenderer} = require('electron')
 const {dialog}:{dialog:Electron.Dialog} = remote;
 

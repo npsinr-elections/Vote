@@ -14,13 +14,14 @@ let editElections: Electron.BrowserWindow = null;
 let appData: election.appDataInterface;
 
 const dataPath:string = app.getPath('userData');
+console.log(dataPath);
 const appDataFile = 'app_data.json'
 
 function createHomeWindow() {
   // Opening the Home Page
   win = new BrowserWindow({ width: 800, height: 600, show: false })
   win.loadURL(url.format({
-    pathname: path.join(__dirname, 'app/index.html'),
+    pathname: path.join(__dirname, 'index.html'),
     protocol: 'file:',
     slashes: true
   }))
@@ -74,7 +75,7 @@ ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
 function loadElectionWindow(arg: election.ElectionDataInterface) {
   editElections = new BrowserWindow({ width: 800, height: 600, show: false })
   editElections.loadURL(url.format({
-    pathname: path.join(__dirname, 'app/edit.html'),
+    pathname: path.join(__dirname, 'edit.html'),
     protocol: 'file:',
     slashes: true
   }))
