@@ -1,8 +1,5 @@
 import * as fs from 'fs-extra';
 
-import * as crypt from 'crypto';
-let algorithm: string = 'aes-256-ctr';
-
 import * as path from 'path';
 import * as shortid from 'shortid';
 
