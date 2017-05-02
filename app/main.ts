@@ -13,7 +13,7 @@ let editElections: Electron.BrowserWindow = null;
 
 let appData: election.appDataInterface;
 
-const dataPath:string = app.getPath('userData');
+const dataPath: string = app.getPath('userData');
 console.log(dataPath);
 const appDataFile = 'app_data.json'
 
@@ -36,24 +36,12 @@ function createHomeWindow() {
 }
 
 app.on('ready', () => {
-  // keytar.deletePassword('voteApp','password').then(()=>{console.log('delete success')}, (err)=>{console.log(err)});
-  get_password((password: string) => {
-    if (password !== null) {
-      appData = <election.appDataInterface>(fileManager.readJSONData(appDataFile,password));
-      console.log(appData);
-      createHomeWindow();
-    } else {
-      // Assuming App opened first time.
-      fileManager.resetAllData();
-      let encryptPassword: string = crypt.randomBytes(256).toString('hex');
-      keytar.setPassword('voteApp', 'password', encryptPassword).then(() => {
-        appData = {elections:[]}
-        fileManager.writeJSONData(appDataFile, appData, encryptPassword);
-        createHomeWindow();
-      }, (err) => { console.log(err); })
-    }
+  if (fileManager.appInitialized(appDataFile)) {
+  appData = <election.appDataInterface>(fileManager.readJSONData(appDataFile));
+  console.log(appData);
+  createHomeWindow();
+  }
 
-  })
 })
 
 app.on('window-all-closed', () => {
@@ -65,11 +53,9 @@ app.on('window-all-closed', () => {
 })
 
 ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
-  get_password((password: string) => {
-    let loadData:election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile, password);
+    let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
     console.log(loadData);
     // loadElectionWindow(loadData);
-  })
 })
 
 function loadElectionWindow(arg: election.ElectionDataInterface) {
@@ -82,10 +68,4 @@ function loadElectionWindow(arg: election.ElectionDataInterface) {
   editElections.webContents.on('did-finish-load', () => {
     editElections.webContents.send('loadElectionData', arg);
   })
-}
-
-function get_password(callback) {
-  keytar.getPassword('voteApp', 'password').then(callback, (err) => {
-    console.log(err);
-  });
 }

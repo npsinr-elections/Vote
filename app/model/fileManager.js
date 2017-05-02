@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var fs = require("fs-extra");
-var crypt = require("crypto");
 var algorithm = 'aes-256-ctr';
 var path = require("path");
 var shortid = require("shortid");
@@ -16,38 +15,28 @@ function newElectionData() {
     return { 'randomDir': randomDir, 'imageDir': imageDir, 'dataFile': dataFile };
 }
 exports.newElectionData = newElectionData;
-function writeJSONData(dataFile, data, password, encrypt) {
-    if (encrypt === void 0) { encrypt = true; }
+function writeJSONData(dataFile, data) {
     var json = JSON.stringify(data);
-    if (encrypt) {
-        json = encryptString(json, password);
-    }
     fs.writeFileSync(path.join(dataPath, dataFile), json, 'utf-8');
 }
 exports.writeJSONData = writeJSONData;
-function readJSONData(dataFile, password, decrypt) {
-    if (decrypt === void 0) { decrypt = true; }
+function readJSONData(dataFile) {
     var readData = fs.readFileSync(path.join(dataPath, dataFile), 'utf-8');
-    if (decrypt) {
-        readData = decryptString(readData, password);
-    }
     return JSON.parse(readData);
 }
 exports.readJSONData = readJSONData;
-function encryptString(data, password) {
-    var cipher = crypt.createCipher(algorithm, password);
-    var crypted = cipher.update(data, 'utf8', 'hex');
-    crypted += cipher.final('hex');
-    return crypted;
-}
-function decryptString(data, password) {
-    var decipher = crypt.createDecipher(algorithm, password);
-    var dec = decipher.update(data, 'hex', 'utf8');
-    dec += decipher.final('utf8');
-    return dec;
-}
 function resetAllData() {
     fs.emptyDirSync(dataPath);
 }
 exports.resetAllData = resetAllData;
+function appInitialized(dataFile) {
+    var appDataPath = path.join(dataPath, dataFile);
+    if (!fs.existsSync(appDataPath)) {
+        resetAllData();
+        var appData = { elections: [] };
+        writeJSONData(dataFile, appData);
+    }
+    return true;
+}
+exports.appInitialized = appInitialized;
 //# sourceMappingURL=fileManager.js.map

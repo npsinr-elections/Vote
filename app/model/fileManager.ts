@@ -23,36 +23,26 @@ export function newElectionData(): { randomDir: string, imageDir: string, dataFi
     return { 'randomDir': randomDir, 'imageDir': imageDir, 'dataFile': dataFile };
 }
 
-export function writeJSONData(dataFile: string, data: object, password: string, encrypt: boolean = true) {
+export function writeJSONData(dataFile: string, data: object) {
     let json: string = JSON.stringify(data);
-    if (encrypt) {
-        json = encryptString(json, password);
-    }
     fs.writeFileSync(path.join(dataPath, dataFile), json, 'utf-8');
 }
 
-export function readJSONData(dataFile:string, password: string, decrypt: boolean = true): object {
+export function readJSONData(dataFile:string): object {
     let readData: string = fs.readFileSync(path.join(dataPath, dataFile), 'utf-8');
-    if (decrypt) {
-        readData = decryptString(readData, password);
-    }
     return JSON.parse(readData);
-}
-
-function encryptString(data: string, password: string):string {
-    let cipher = crypt.createCipher(algorithm, password)
-    let crypted = cipher.update(data, 'utf8', 'hex')
-    crypted += cipher.final('hex');
-    return crypted;
-}
-
-function decryptString(data: string, password: string): string {
-    let decipher = crypt.createDecipher(algorithm, password);
-    let dec = decipher.update(data, 'hex', 'utf8');
-    dec += decipher.final('utf8');
-    return dec;
 }
 
 export function resetAllData() {
     fs.emptyDirSync(dataPath);
+}
+
+export function appInitialized(dataFile:string):boolean {
+    let appDataPath = path.join(dataPath, dataFile);
+    if (!fs.existsSync(appDataPath)) {
+        resetAllData();
+        let appData:election.appDataInterface = { elections: [] }
+        writeJSONData(dataFile, appData);
+    } 
+    return true; 
 }
