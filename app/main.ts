@@ -37,9 +37,9 @@ function createHomeWindow() {
 
 app.on('ready', () => {
   if (fileManager.appInitialized(appDataFile)) {
-  appData = <election.appDataInterface>(fileManager.readJSONData(appDataFile));
-  console.log(appData);
-  createHomeWindow();
+    appData = <election.appDataInterface>(fileManager.readJSONData(appDataFile));
+    console.log(appData);
+    createHomeWindow();
   }
 
 })
@@ -53,9 +53,9 @@ app.on('window-all-closed', () => {
 })
 
 ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
-    let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
-    console.log(loadData);
-    // loadElectionWindow(loadData);
+  let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
+  console.log(loadData);
+  loadElectionWindow(loadData);
 })
 
 function loadElectionWindow(arg: election.ElectionDataInterface) {
@@ -68,4 +68,5 @@ function loadElectionWindow(arg: election.ElectionDataInterface) {
   editElections.webContents.on('did-finish-load', () => {
     editElections.webContents.send('loadElectionData', arg);
   })
+  editElections.show();
 }
