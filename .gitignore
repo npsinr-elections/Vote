@@ -13,3 +13,4 @@ app/js/*.js
 app/js/*.js.map
 app/model/*.js
 app/model/*.js.map
+.cache/
