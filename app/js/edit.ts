@@ -15,5 +15,3 @@ function loadElection(data:election.ElectionDataInterface) {
     editTitle.innerHTML = data.name;
     editSubTitle.innerHTML = data.description;
 }
-
-console.log('');

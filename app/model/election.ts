@@ -49,11 +49,11 @@ class Candidate {
     }
 }
 
-export function initNewElection(data: newElectionInterface, appData: appDataInterface, appDataFile:string): ElectionDataInterface {
+export function initNewElection(data: newElectionInterface, appData: appDataInterface, appDataFile: string): ElectionDataInterface {
     let { dataFile, imageDir, randomDir } = fileManager.newElectionData();
 
-    let electionId:string = shortid.generate();
-    
+    let electionId: string = shortid.generate();
+
     data['id'] = electionId
     data['dataDirectory'] = randomDir;
     data['dataFile'] = dataFile;
@@ -63,9 +63,9 @@ export function initNewElection(data: newElectionInterface, appData: appDataInte
     fileManager.writeJSONData(path.join(randomDir, dataFile), data);
 
     appData.elections.push({ name: data.name, id: electionId, dataDirectory: randomDir, dataFile: dataFile })
-    
+
     fileManager.writeJSONData(appDataFile, appData);
-    
+
     return <ElectionDataInterface>data;
 }
 
@@ -79,7 +79,7 @@ export interface newElectionInterface {
 }
 
 export interface ElectionDataInterface extends newElectionInterface {
-    id:string;
+    id: string;
     imageData: string;
     dataFile: string;
     dataDirectory: string;
@@ -87,5 +87,12 @@ export interface ElectionDataInterface extends newElectionInterface {
 }
 
 export interface appDataInterface {
-    elections: { name: string, id:string, dataDirectory: string, dataFile: string }[];
+    elections:  electionObject[];
+}
+
+export interface electionObject {
+    name: string; 
+    id: string; 
+    dataDirectory: string; 
+    dataFile: string;
 }

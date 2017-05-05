@@ -6,7 +6,6 @@ import * as crypt from "crypto";
 import * as keytar from "keytar";
 import * as fileManager from "./model/fileManager"
 
-// require('electron-debug')(); //ONLY DURING DEVELOPMENT!! (Ctrl+Shift+I:DevTools, Ctrl+R:Reload)
 
 let win: Electron.BrowserWindow = null;
 let editElections: Electron.BrowserWindow = null;
@@ -56,6 +55,10 @@ ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
   let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
   console.log(loadData);
   loadElectionWindow(loadData);
+})
+
+ipcMain.on('getElections', (event) => {
+  event.returnValue = appData.elections;
 })
 
 function loadElectionWindow(arg: election.ElectionDataInterface) {
