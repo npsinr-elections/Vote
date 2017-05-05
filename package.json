@@ -31,7 +31,7 @@
     "@types/es6-shim": "^0.31.33",
     "@types/fs-extra": "^2.1.0",
     "@types/keytar": "^4.0.0",
-    "@types/node": "^7.0.13",
+    "@types/node": "^7.0.18",
     "@types/shortid": "0.0.28",
     "ajv": "^5.0.1",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
