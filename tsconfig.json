@@ -3,5 +3,12 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": true
-    }
+    },
+    "files":[
+        "app/main.ts",
+        "app/js/edit.ts",
+        "app/js/home.ts",
+        "app/model/election.ts",
+        "app/model/fileManager.ts"
+    ]
 }
