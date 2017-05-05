@@ -53,9 +53,9 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
   let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
-  let loadAsk = dialog.showMessageBox({type:'info',message:'Election Created Succesfully!',buttons:['Yes','No'],detail:'Do you want to load your new election?'})
+  let loadAsk = dialog.showMessageBox({ type: 'info', message: 'Election Created Succesfully!', buttons: ['Yes', 'No'], detail: 'Do you want to load your new election?' })
   if (loadAsk == 0) {
-  loadElectionWindow(loadData);
+    loadElectionWindow(loadData);
   }
 })
 
@@ -63,21 +63,35 @@ ipcMain.on('getElections', (event) => {
   event.returnValue = appData.elections;
 })
 
-ipcMain.on('deleteElection', (event, arg:string) => {
-  for (let i=0; i<appData.elections.length; i++) {
-    let current = appData.elections[i]
-    if (current.id == arg) {
-      let dataDir = current.dataDirectory;
-      fileManager.deleteElection(dataDir);
-      event.returnValue = "Election "+current.name+" was succesfully deleted!";
-      appData.elections.splice(i,1);
-      console.log(appData);
-      fileManager.writeJSONData(appDataFile, appData);
-      return;
+ipcMain.on('loadElection', (event, arg: string) => {
+
+})
+
+ipcMain.on('deleteElection', (event, arg: string) => {
+  let electionObj = getElectionById(arg)
+  if (electionObj !== false) {
+    let dataDir = electionObj.dataDirectory;
+    fileManager.deleteElection(dataDir);
+
+    event.returnValue = "Election " + electionObj.name + " was succesfully deleted!";
+
+    appData.elections.splice(appData.elections.indexOf(electionObj), 1);
+
+    fileManager.writeJSONData(appDataFile, appData);
+  } else {
+    event.returnValue = "ERROR";
+  }
+})
+
+function getElectionById(id: string) {
+  for (let i = 0; i < appData.elections.length; i++) {
+    if (appData.elections[i].id == id) {
+      return appData.elections[i]
     }
   }
-  event.returnValue = "ERROR";
-})
+  return false;
+}
+
 function loadElectionWindow(arg: election.ElectionDataInterface) {
   editElections = new BrowserWindow({ width: 800, height: 600, show: false })
   editElections.loadURL(url.format({
