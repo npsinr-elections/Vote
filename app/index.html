@@ -4,6 +4,7 @@
 <head>
     <title>Vote</title>
     <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/typicons.min.css">
     <link rel="stylesheet" type="text/css" href="./css/home.css">
 </head>
 
@@ -24,96 +25,107 @@
     </section>
     <div id='newElection' class="modal">
         <div class="modal-background"></div>
-        <div class="modal-content">
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>New Election</p>
-                    <button id='closeNewElection' class="delete"></button>
-                </div>
-                <div class="message-body">
-                    <h3 class="title sectionPrompt">What is your election called?</h3>
-                    <div class='field is-horizontal'>
-                        <div class='field-label is-normal'>
-                            <label class='label'>Name</label>
-                        </div>
-                        <div class='field-body'>
-                            <div class='field'>
-                                <p class='control'>
-                                    <input name='name' class='input newElectionData' type="text" placeholder="Give a title for the elections" />
-                                </p>
-                            </div>
-                        </div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">New Election</p>
+                <button id='closeNewElection' class="delete"></button>
+            </header>
+            <section class="modal-card-body">
+                <h3 class="title sectionPrompt">What is your election called?</h3>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Name</label>
                     </div>
-                    <div class='field is-horizontal'>
-                        <div class='field-label is-normal'>
-                            <label class='label'>Desciption</label>
+                    <div class='field-body'>
+                        <div class='field'>
+                            <p class='control'>
+                                <input name='name' class='input newElectionData' type="text" placeholder="Give a title for the elections" />
+                            </p>
                         </div>
-                        <div class='field-body'>
-                            <div class='field'>
-                                <p class='control'>
-                                    <textarea name='description' class='textarea newElectionData' type="text" placeholder="Write a subtitle message that will whow during the elections."></textarea>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <h3 class="title sectionPrompt">How does it look?</h3>
-                    <div class='field is-horizontal'>
-                        <div class='field-label is-normal'>
-                            <label class='label'>Image</label>
-                        </div>
-                        <div class='field-body'>
-                            <div class='field has-addons'>
-                                <p class='control'>
-                                    <input name='image' id='imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
-                                </p>
-                                <p class='control'>
-                                    <button id='imageBtn' class='button is-primary'>Upload</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='field is-horizontal'>
-                        <div class='field-label is-normal'>
-                            <label class='label'>Background Color</label>
-                        </div>
-                        <div class='field-body'>
-                            <div class='field has-addons'>
-                                <p class='control'>
-                                    <input name='backColor' id='backColorInput' class='input newElectionData' type="text" placeholder="Background color of title page"
-                                        disabled />
-                                </p>
-                                <p class='control'>
-                                    <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">Choose color</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='field is-horizontal'>
-                        <div class='field-label is-normal'>
-                            <label class='label'>Font Color</label>
-                        </div>
-                        <div class='field-body'>
-                            <div class='field has-addons'>
-                                <p class='control'>
-                                    <input name='fontColor' id='titleColorInput' class='input newElectionData' type="text" placeholder="Color of font on title page"
-                                        disabled />
-                                </p>
-                                <p class='control'>
-                                    <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">Choose color</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <h3 class="title sectionPrompt">And ...you are done!</h3>
-                    <div class='field'>
-                        <p class='control'>
-                            <button id='createElectionBtn' class="button is-success">Create my Election!</button>
-                        </p>
                     </div>
                 </div>
-            </article>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Desciption</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field'>
+                            <p class='control'>
+                                <textarea name='description' class='textarea newElectionData' type="text" placeholder="Write a subtitle message that will show during the elections."></textarea>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="title sectionPrompt">How does it look?</h3>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Image</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='image' id='imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='imageBtn' class='button is-primary'>Upload</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Background Color</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='backColor' id='backColorInput' class='input newElectionData' type="text" placeholder="Background color of title page"
+                                    disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">Choose color</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Font Color</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='fontColor' id='titleColorInput' class='input newElectionData' type="text" placeholder="Color of font on title page"
+                                    disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">Choose color</button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="title sectionPrompt">And ...you are done!</h3>
+                <div class='field'>
+                    <p class='control'>
+                        <button id='createElectionBtn' class="button is-success">Create my Election!</button>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div id='loadElection' class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Load an Election</p>
+                <button id="closeLoadElection" class="delete"></button>
+            </header>
+            <section class="modal-card-body">
+                <nav id="electionsList" class="panel">
+                </nav>
+            </section>
         </div>
     </div>
     <script>
