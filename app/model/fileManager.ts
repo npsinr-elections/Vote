@@ -30,6 +30,10 @@ export function readJSONData(dataFile:string): object {
     return JSON.parse(readData);
 }
 
+export function deleteElection(dataDir:string):void {
+    fs.removeSync(path.join(dataPath, dataDir));
+}
+
 export function resetAllData() {
     fs.emptyDirSync(dataPath);
 }

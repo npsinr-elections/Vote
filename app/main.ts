@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as url from "url";
 import * as election from "./model/election";
@@ -53,14 +53,31 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
   let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
-  console.log(loadData);
+  let loadAsk = dialog.showMessageBox({type:'info',message:'Election Created Succesfully!',buttons:['Yes','No'],detail:'Do you want to load your new election?'})
+  if (loadAsk == 0) {
   loadElectionWindow(loadData);
+  }
 })
 
 ipcMain.on('getElections', (event) => {
   event.returnValue = appData.elections;
 })
 
+ipcMain.on('deleteElection', (event, arg:string) => {
+  for (let i=0; i<appData.elections.length; i++) {
+    let current = appData.elections[i]
+    if (current.id == arg) {
+      let dataDir = current.dataDirectory;
+      fileManager.deleteElection(dataDir);
+      event.returnValue = "Election "+current.name+" was succesfully deleted!";
+      appData.elections.splice(i,1);
+      console.log(appData);
+      fileManager.writeJSONData(appDataFile, appData);
+      return;
+    }
+  }
+  event.returnValue = "ERROR";
+})
 function loadElectionWindow(arg: election.ElectionDataInterface) {
   editElections = new BrowserWindow({ width: 800, height: 600, show: false })
   editElections.loadURL(url.format({

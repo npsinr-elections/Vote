@@ -54,6 +54,10 @@ createElectionBtn.addEventListener('click', () => {
     let inputData: HTMLInputElement;
     for (let i = 0; i < newElectionData.length; i++) {
         inputData = <HTMLInputElement>newElectionData[i];
+        if (inputData.value.replace(/\s/g, "").length == 0) {
+            dialog.showErrorBox("Some data wasn't entered...",'Please fill all the fields!');
+            return;
+        }
         newElectionObject[inputData.name] = inputData.value;
     }
     ipcRenderer.send('newElection', newElectionObject);
@@ -69,14 +73,20 @@ let loadElectionElementBtn = <HTMLButtonElement>document.getElementById('loadEle
 
 function openElectionsView() {
     let electionsList: election.electionObject[] = ipcRenderer.sendSync('getElections');
-    electionListContainer.innerHTML = '';
+
+    if (electionsList.length == 0) {
+        electionListContainer.innerHTML = "<div style='color:grey;font-size:30px;text-align:center;'>You haven't created any elections :("
+    } else {
+        electionListContainer.innerHTML = '';
+    }
+
     for (let i = 0; i < electionsList.length; i++) {
         electionListContainer.appendChild(createElectionElement(electionsList[i]));
     }
     toggleLoadElection();
 }
 
-function createElectionElement(data:election.electionObject): HTMLAnchorElement {
+function createElectionElement(data: election.electionObject): HTMLAnchorElement {
     let electionElement = document.createElement('a');
     electionElement.className = 'panel-block electionElement';
 
@@ -96,7 +106,20 @@ function createElectionElement(data:election.electionObject): HTMLAnchorElement 
     let deleteIcon = document.createElement('i');
     deleteIcon.className = 'editIcon typcn typcn-trash';
     deleteIcon.title = 'Delete Election';
-    
+    deleteIcon.addEventListener('click', function () {
+        let electionName = this.parentElement.dataset.name;
+        let confirm = dialog.showMessageBox({ type: 'warning', buttons: ['Yes', 'No'], title: 'Confirm Action', message: 'Are you sure you want to delete the election: ' + electionName + '?', detail: 'This action cannot be reversed.' });
+        if (confirm == 0) {
+            let result = ipcRenderer.sendSync('deleteElection', this.parentElement.dataset.id);
+            toggleLoadElection();
+            openElectionsView();
+            if (result !== 'ERROR') {
+                dialog.showMessageBox({ type: 'info', buttons:['Ok'], title: 'Action Sucessfull', message: result });
+            } else {
+                dialog.showErrorBox('Delete Action Failed', 'Something went wrong, the action could not be completed.');
+            }
+        }
+    })
     editIcons.appendChild(loadIcon);
     editIcons.appendChild(deleteIcon);
 
