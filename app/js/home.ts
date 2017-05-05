@@ -102,6 +102,9 @@ function createElectionElement(data: election.electionObject): HTMLAnchorElement
     let loadIcon = document.createElement('i');
     loadIcon.className = 'editIcon typcn typcn-download-outline';
     loadIcon.title = 'Load Election';
+    loadIcon.addEventListener('click', function(){
+        ipcRenderer.send('loadElection', this.parentElement.dataset.id);
+    })
 
     let deleteIcon = document.createElement('i');
     deleteIcon.className = 'editIcon typcn typcn-trash';

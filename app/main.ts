@@ -12,6 +12,8 @@ let editElections: Electron.BrowserWindow = null;
 
 let appData: election.appDataInterface;
 
+let loadedElection: election.ElectionDataInterface = null;
+
 const dataPath: string = app.getPath('userData');
 console.log(dataPath);
 const appDataFile = 'app_data.json'
@@ -64,7 +66,11 @@ ipcMain.on('getElections', (event) => {
 })
 
 ipcMain.on('loadElection', (event, arg: string) => {
-
+  let electionObj = getElectionById(arg);
+  if (electionObj !== false) {
+    let electionData = <election.ElectionDataInterface>fileManager.readJSONData(path.join(electionObj.dataDirectory, electionObj.dataFile));
+    loadElectionWindow(electionData);
+  }
 })
 
 ipcMain.on('deleteElection', (event, arg: string) => {
@@ -93,14 +99,32 @@ function getElectionById(id: string) {
 }
 
 function loadElectionWindow(arg: election.ElectionDataInterface) {
-  editElections = new BrowserWindow({ width: 800, height: 600, show: false })
-  editElections.loadURL(url.format({
-    pathname: path.join(__dirname, 'edit.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-  editElections.webContents.on('did-finish-load', () => {
-    editElections.webContents.send('loadElectionData', arg);
-  })
-  editElections.show();
+  if (editElections) {
+    if (arg.id == loadedElection.id) {
+      dialog.showMessageBox({type:'info',buttons:['Ok'],title:'Election Already Loaded',message:arg.name + ' has already been loaded in another window.', detail:'Please use that window to edit the election.'})
+    } else {
+      dialog.showErrorBox('Two Elections cannot be loaded simultaneously', 'Please close ' + loadedElection.name + ' to edit ' + arg.name);
+    }
+  } else {
+    loadedElection = arg;
+    editElections = new BrowserWindow({ width: 800, height: 600, show: false })
+    editElections.loadURL(url.format({
+      pathname: path.join(__dirname, 'edit.html'),
+      protocol: 'file:',
+      slashes: true
+    }))
+
+    editElections.webContents.on('did-finish-load', () => {
+      editElections.webContents.send('loadElectionData', arg);
+    })
+
+    editElections.once('ready-to-show', () => {
+      editElections.show();
+    })
+
+    editElections.on('closed', () => {
+      editElections = null;
+      loadedElection = null;
+    })
+  }
 }
