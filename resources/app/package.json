@@ -1,0 +1,41 @@
+{
+  "name": "vote",
+  "version": "0.0.1",
+  "description": "An applications to host elections on a local server.",
+  "main": "./app/main.js",
+  "build": {
+    "appId": "com.Elections.Vote"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p . || true",
+    "start": "electron ."
+  },
+  "postinstall": "install-app-deps",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thebongy/Vote.git"
+  },
+  "author": "Rishit Bansal <rishit.bansal0@gmail.com> (http://github.com/thebongy)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/thebongy/Vote/issues"
+  },
+  "homepage": "https://github.com/thebongy/Vote#readme",
+  "devDependencies": {
+    "@types/electron": "^1.4.37",
+    "@types/es6-shim": "^0.31.33",
+    "@types/fs-extra": "^2.1.0",
+    "@types/node": "^7.0.18",
+    "@types/shortid": "0.0.28",
+    "ajv": "^5.0.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.4.0",
+    "babel-preset-react": "^6.24.1",
+    "electron-prebuilt-compile": "1.6.6"
+  },
+  "dependencies": {
+    "fs-extra": "^3.0.0",
+    "shortid": "^2.2.8"
+  }
+}

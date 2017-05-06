@@ -2,8 +2,6 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as url from "url";
 import * as election from "./model/election";
-import * as crypt from "crypto";
-import * as keytar from "keytar";
 import * as fileManager from "./model/fileManager"
 
 
