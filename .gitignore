@@ -7,10 +7,10 @@ vote-win32-ia32/
 out/
 *.js
 *.js.map
-app/*.js
-app/*.js.map
-app/js/*.js
-app/js/*.js.map
-app/model/*.js
-app/model/*.js.map
+resources/app/*.js
+resources/app/*.js.map
+resources/app/js/*.js
+resources/app/js/*.js.map
+resources/app/model/*.js
+resources/app/model/*.js.map
 .cache/

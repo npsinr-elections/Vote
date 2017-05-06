@@ -5,10 +5,10 @@
         "sourceMap": true
     },
     "files":[
-        "app/main.ts",
-        "app/js/edit.ts",
-        "app/js/home.ts",
-        "app/model/election.ts",
-        "app/model/fileManager.ts"
+        "resources/app/main.ts",
+        "resources/app/js/edit.ts",
+        "resources/app/js/home.ts",
+        "resources/app/model/election.ts",
+        "resources/app/model/fileManager.ts"
     ]
 }
