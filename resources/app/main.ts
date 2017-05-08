@@ -63,16 +63,20 @@ ipcMain.on('getElections', (event) => {
   event.returnValue = appData.elections;
 })
 
+ipcMain.on('saveElectionData', (event, arg: election.ElectionDataInterface) => {
+  event.returnValue = fileManager.saveElectionData(arg, appData, appDataFile);
+})
+
 ipcMain.on('loadElection', (event, arg: string) => {
-  let electionObj = getElectionById(arg);
+  let electionObj = election.getElectionById(arg, appData);
   if (electionObj !== false) {
-    let electionData = <election.ElectionDataInterface>fileManager.readJSONData(path.join(electionObj.dataDirectory, electionObj.dataFile));
+    let electionData = <election.ElectionDataInterface>fileManager.readJSONData(electionObj.dataFile);
     loadElectionWindow(electionData);
   }
 })
 
 ipcMain.on('deleteElection', (event, arg: string) => {
-  let electionObj = getElectionById(arg)
+  let electionObj = election.getElectionById(arg, appData);
   if (electionObj !== false) {
     let dataDir = electionObj.dataDirectory;
     fileManager.deleteElection(dataDir);
@@ -87,19 +91,10 @@ ipcMain.on('deleteElection', (event, arg: string) => {
   }
 })
 
-function getElectionById(id: string) {
-  for (let i = 0; i < appData.elections.length; i++) {
-    if (appData.elections[i].id == id) {
-      return appData.elections[i]
-    }
-  }
-  return false;
-}
-
 function loadElectionWindow(arg: election.ElectionDataInterface) {
   if (editElections) {
     if (arg.id == loadedElection.id) {
-      dialog.showMessageBox({type:'info',buttons:['Ok'],title:'Election Already Loaded',message:arg.name + ' has already been loaded in another window.', detail:'Please use that window to edit the election.'})
+      dialog.showMessageBox({ type: 'info', buttons: ['Ok'], title: 'Election Already Loaded', message: arg.name + ' has already been loaded in another window.', detail: 'Please use that window to edit the election.' })
     } else {
       dialog.showErrorBox('Two Elections cannot be loaded simultaneously', 'Please close ' + loadedElection.name + ' to edit ' + arg.name);
     }

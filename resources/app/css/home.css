@@ -40,3 +40,11 @@ html,body {
 .editIcon:hover {
     color:#00d1b2;
 }
+
+.electionImage {
+    width:256px;
+    height:256px;
+    margin-left: auto;
+    margin-right:auto;
+    display: none;
+}

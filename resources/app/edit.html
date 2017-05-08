@@ -1,24 +1,171 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Edit Elections</title>
-        <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
-    </head>
-    <body>
-        <section class="hero is_primary">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 id="election-title" class="title">
-                        Edit Elections
-                    </h1>
-                    <h2 id="election-subtitle" class="subtitle">
-                        Loading Data......
-                    </h2>
-                </div>
+
+<head>
+    <title>Edit Elections</title>
+    <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/typicons.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/edit.css">
+</head>
+
+<body>
+    <section class="hero is-primary is-medium">
+        <div class="hero-body">
+            <div class="container">
+                <h1 id="election-title" class="title">
+                    Edit Elections
+                </h1>
+                <h2 id="election-subtitle" class="subtitle">
+                    Loading Data......
+                </h2>
+                <a id="editElectionBtn" class="button is-warning">
+                    <span class="icon">
+                            <i class="typcn typcn-edit"></i>
+                        </span>
+                    <span>Edit Elections</span>
+                </a>
             </div>
-        </section>
-        <script>
-        require('./js/edit.js'); 
-        </script>
-    </body>
+        </div>
+    </section>
+
+    <div id='editElection' class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Edit Election</p>
+                <button id='closeEditElection' class="delete"></button>
+            </header>
+            <section class="modal-card-body">
+                <h3 class="title sectionPrompt">What is your election called?</h3>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Name</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field'>
+                            <p class='control'>
+                                <input name='name' class='input electionData' type="text" placeholder="Give a title for the elections" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Desciption</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field'>
+                            <p class='control'>
+                                <textarea name='description' class='textarea electionData' type="text" placeholder="Write a subtitle message that will show during the elections."></textarea>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <h3 class="title sectionPrompt">How does it look?</h3>
+                <figure id="electionImgPreview" class="image electionImage">
+                    <img src="" alt="Preview for election image">
+                </figure>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Image</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='image' id='imageInput' class='input electionData' type="text" placeholder='A logo/small image' disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='imageBtn' class='button is-primary'>
+                                    <span class="icon">
+                                        <i class="typcn typcn-image"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Upload
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Background Color</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='backColor' id='electionBackColorInput' class='input electionData' type="text" placeholder="Background color of title page"
+                                    disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='electionBackColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'electionBackColorInput', styleElement:'electionBackColorBtn'}">
+                                    <span class="icon">
+                                        <i class="typcn typcn-pipette"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Choose color
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class='field is-horizontal'>
+                    <div class='field-label is-normal'>
+                        <label class='label'>Font Color</label>
+                    </div>
+                    <div class='field-body'>
+                        <div class='field has-addons'>
+                            <p class='control'>
+                                <input name='fontColor' id='electionTitleColorInput' class='input electionData' type="text" placeholder="Color of font on title page"
+                                    disabled />
+                            </p>
+                            <p class='control'>
+                                <button id='electionTitleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'electionTitleColorInput', styleElement:'electionTitleColorBtn'}">
+                                    <span class="icon">
+                                        <i class="typcn typcn-pipette"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Choose color
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class='field'>
+                    <p class='control'>
+                        <div class="has-text-centered">
+                        <button id='saveEditElection' class="button is-success is-medium">
+                            <span class="icon">
+                                <i class="typcn typcn-edit"></i>
+                            </span>
+                            <span>Save Changes</span>
+                        </button>
+                        </div>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="container">
+            <div class="heading">
+                <h1 class="title">Offices</h1>
+                <h2 class="subtitle">Add new offices/posts to hold elections for.</h2>
+            </div>
+            <hr>
+            <div class="has-text-centered">
+            <a id="addOficeBtn" class="button is-success">
+                <span class="icon">
+                    <i class="typcn typcn-document-add"></i>
+                </span>
+                <span>Add New Office</span>
+            </a>
+            </div>
+        </div>
+    </section>
+    <script>
+        require('./js/edit.js');
+    </script>
+    <script src='./js/jscolor.min.js'></script>
+</body>
+
 </html>

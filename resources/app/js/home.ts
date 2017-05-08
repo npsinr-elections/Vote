@@ -28,6 +28,9 @@ closeLoadElection.addEventListener('click', toggleLoadElection);
 let imageBtn = <HTMLButtonElement>document.getElementById('imageBtn');
 let imageInput = <HTMLInputElement>document.getElementById('imageInput');
 
+let imagePreview = document.getElementById('electionPreview');
+let imagePreviewImg = <HTMLImageElement>imagePreview.firstElementChild;
+
 // Open file explorer window to select image.
 imageBtn.addEventListener('click', () => {
     let imagePath: string[] = dialog.showOpenDialog({
@@ -38,7 +41,14 @@ imageBtn.addEventListener('click', () => {
     })
 
     imageInput.value = (typeof imagePath != 'undefined') ? imagePath[0] : '';
-
+    
+    if (imageInput.value == '') {
+        imagePreview.style.display = "none";
+    } else {
+        imagePreview.style.display = "block";
+    }
+    
+    imagePreviewImg.src = imageInput.value;
 })
 
 let createElectionBtn = <HTMLButtonElement>document.getElementById('createElectionBtn');
@@ -62,8 +72,19 @@ createElectionBtn.addEventListener('click', () => {
     }
     ipcRenderer.send('newElection', newElectionObject);
     toggleNewElection();
+    resetAllFields();
 })
 
+function resetAllFields() {
+    let inputField:HTMLInputElement;
+    for (let i = 0; i < newElectionData.length; i++) {
+        inputField = <HTMLInputElement>newElectionData[i];
+        inputField.value = "";
+    }
+
+    imagePreview.style.display = "none";
+    imagePreviewImg.src = '';
+}
 // Container Div which has the list of elections.
 let electionListContainer = document.getElementById('electionsList');
 
@@ -104,6 +125,7 @@ function createElectionElement(data: election.electionObject): HTMLAnchorElement
     loadIcon.title = 'Load Election';
     loadIcon.addEventListener('click', function(){
         ipcRenderer.send('loadElection', this.parentElement.dataset.id);
+        toggleLoadElection();
     })
 
     let deleteIcon = document.createElement('i');

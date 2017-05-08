@@ -60,13 +60,23 @@ export function initNewElection(data: newElectionInterface, appData: appDataInte
     data['imageData'] = imageDir;
     data['offices'] = [];
 
-    fileManager.writeJSONData(path.join(randomDir, dataFile), data);
-
     appData.elections.push({ name: data.name, id: electionId, dataDirectory: randomDir, dataFile: dataFile })
-
     fileManager.writeJSONData(appDataFile, appData);
 
+    fileManager.writeJSONData(dataFile, data);
+    let newImagePath = fileManager.storeImageData(data.image, imageDir);
+    data.image = newImagePath;
+
     return <ElectionDataInterface>data;
+}
+
+export function getElectionById(id: string, appData:appDataInterface) {
+  for (let i = 0; i < appData.elections.length; i++) {
+    if (appData.elections[i].id == id) {
+      return appData.elections[i]
+    }
+  }
+  return false;
 }
 
 export interface newElectionInterface {

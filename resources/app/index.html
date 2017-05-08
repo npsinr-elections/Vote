@@ -18,8 +18,18 @@
                 <h2 class="subtitle">
                     Elections: Simple. Fast. Easy
                 </h2>
-                <a id='newElectionBtn' class="button is-success is-outlined">New Election</a>
-                <a id='loadElectionBtn' class="button is-primary is-outlined">Load Election</a>
+                <a id='newElectionBtn' class="button is-success is-outlined">
+                    <span class="icon">
+                        <i class="typcn typcn-document-add"></i>
+                    </span>
+                    <span>New Election</span>
+                </a>
+                <a id='loadElectionBtn' class="button is-primary is-outlined">
+                    <span class="icon">
+                        <i class="typcn typcn-folder-open"></i>
+                    </span>
+                    <span>Load Election</span>
+                </a>
             </div>
         </div>
     </section>
@@ -58,6 +68,9 @@
                 </div>
                 <hr>
                 <h3 class="title sectionPrompt">How does it look?</h3>
+                <figure id="electionPreview" class="image electionImage">
+                    <img src="" alt="Preview for election image">
+                </figure>
                 <div class='field is-horizontal'>
                     <div class='field-label is-normal'>
                         <label class='label'>Image</label>
@@ -68,7 +81,12 @@
                                 <input name='image' id='imageInput' class='input newElectionData' type="text" placeholder='A logo/small image' disabled />
                             </p>
                             <p class='control'>
-                                <button id='imageBtn' class='button is-primary'>Upload</button>
+                                <button id='imageBtn' class='button is-primary'>
+                                    <span class="icon">
+                                        <i class="typcn typcn-image"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Upload
+                                </button>
                             </p>
                         </div>
                     </div>
@@ -84,7 +102,12 @@
                                     disabled />
                             </p>
                             <p class='control'>
-                                <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">Choose color</button>
+                                <button id='backColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'backColorInput', styleElement:'backColorBtn'}">
+                                    <span class="icon">
+                                        <i class="typcn typcn-pipette"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Choose color
+                                </button>
                             </p>
                         </div>
                     </div>
@@ -100,17 +123,31 @@
                                     disabled />
                             </p>
                             <p class='control'>
-                                <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">Choose color</button>
+                                <button id='titleColorBtn' class="button is-primary jscolor {refine:false, hash:true,valueElement:'titleColorInput', styleElement:'titleColorBtn'}">
+                                    <span class="icon">
+                                        <i class="typcn typcn-pipette"></i>
+                                    </span>
+                                    &nbsp;&nbsp;Choose color
+                                </button>
                             </p>
                         </div>
                     </div>
                 </div>
                 <hr>
+                <div class="has-text-centered">
                 <h3 class="title sectionPrompt">And ...you are done!</h3>
                 <div class='field'>
                     <p class='control'>
-                        <button id='createElectionBtn' class="button is-success">Create my Election!</button>
+                        <div class="has-text-centered">
+                        <button id='createElectionBtn' class="button is-success is-medium">
+                            <span>Create my Election!</span>
+                            <span class="icon">
+                                <i class="typcn typcn-thumbs-up"></i>
+                            </span>
+                        </button>
+                        </div>
                     </p>
+                </div>
                 </div>
             </section>
         </div>
