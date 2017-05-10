@@ -1,11 +1,15 @@
 'use strict';
 
+import * as election from '../model/election';
+
 const { remote, ipcRenderer }: { remote: Electron.Remote, ipcRenderer: Electron.IpcRenderer } = require('electron')
 const { dialog }: { dialog: Electron.Dialog } = remote;
-import * as election from '../model/election';
+
+import * as shortid from "shortid";
 
 let electionData: election.ElectionDataInterface = null; // The current electionData Object for this window.
 let currentModalData = null; // The data currently in the popup election Modal.
+let modalAction = null;
 
 let electionDataFields = document.getElementsByClassName('electionData'); // All the input fields in the popup modal.
 
@@ -20,14 +24,26 @@ let electionModalTitle = document.getElementById('electionModalTitle')
 let saveEditElection = document.getElementById('saveEditElection');
 let closeEditElection = document.getElementById('closeEditElection');
 
+let officeContainer = document.getElementById('offices');
+let officeTemplate = document.getElementById('officeTemplate').innerHTML;
+
+let addOfficeBtn = document.getElementById('addOfficeBtn');
+addOfficeBtn.addEventListener('click', function () {
+    openEditOfficeInfo({ id: shortid.generate(), candidates: [] }, true);
+})
 
 // View/Hide the election popup modal
 function toggleEditElectionModal() {
     editElectionModal.classList.toggle('is-active');
 }
 
+export function editOffice(id:string) {
+    let officeObject = <election.officeDataInterface>election.getOfficeById(id, electionData.offices);
+    openEditOfficeInfo(officeObject);
+}
 // Open the popup modal to edit the Election's top-level data.
 function openEditElectionInfo() {
+    modalAction = "editElection";
     electionModalTitle.innerHTML = "Edit Election: " + electionData.name;
     setModalData(electionData);
     currentModalData = electionData;
@@ -38,12 +54,14 @@ function openEditElectionInfo() {
 // Open the popup modal to edit a specific election's data.
 function openEditOfficeInfo(data, newOffice = false) {
     if (newOffice) {
-        editElectionModal.innerHTML = 'Create New Office';
+        modalAction = "newOffice";
+        electionModalTitle.innerHTML = 'Create New Office';
         saveEditElection.children[1].innerHTML = "Create New Office";
-        currentModalData = {candidates:[]};
+        currentModalData = data;
         resetEditElectionModal();
     } else {
-        editElectionModal.innerHTML = 'Edit Office: ' + data.name;
+        modalAction = "editOffice";
+        electionModalTitle.innerHTML = 'Edit Office: ' + data.name;
         saveEditElection.children[1].innerHTML = "Save Changes";
         setModalData(data);
         currentModalData = data;
@@ -101,15 +119,31 @@ saveEditElection.addEventListener('click', function () {
         }
     }
 
+    switch (modalAction) {
+        case "editElection":
+            editTitle.innerHTML = electionData.name;
+            editSubTitle.innerHTML = electionData.description;
+            break;
+        case "newOffice":
+            officeContainer.innerHTML += renderTemplate(officeTemplate, currentModalData);
+            console.log(currentModalData);
+            electionData.offices.push(currentModalData);
+            break;
+        case "editOffice":
+            let officeName = document.getElementById(currentModalData.id + '-name');
+            let officeDesc = document.getElementById(currentModalData.id + '-description');
+            console.log(currentModalData);
+            officeName.innerHTML = currentModalData.name;
+            officeDesc.innerHTML = currentModalData.description;
+            break;
+    }
+
+
     // Ask the main Process to save the Data, display success message
     let result = ipcRenderer.sendSync('saveElectionData', electionData);
     if (result == 'Saved') {
-        let loadAsk = dialog.showMessageBox({ type: 'info', message: 'Success', buttons: ['Ok'], detail: electionData.name + " has been saved succesfully." })
+        let loadAsk = dialog.showMessageBox({ type: 'info', message: 'Success', buttons: ['Ok'], detail: currentModalData.name + " has been saved succesfully." })
     }
-
-    // This is to make sure the title is updated, if the election name and subtitle were changed.
-    editTitle.innerHTML = electionData.name;
-    editSubTitle.innerHTML = electionData.description;
 
     // Close the popup modal.
     toggleEditElectionModal();
@@ -163,6 +197,9 @@ function loadElection(data: election.ElectionDataInterface) {
     electionData = data;
     editTitle.innerHTML = data.name;
     editSubTitle.innerHTML = data.description;
+    for (let i=0; i<electionData.offices.length; i++) {
+           officeContainer.innerHTML += renderTemplate(officeTemplate, electionData.offices[i]);
+    }
 }
 
 // Set the current data values in the edit election popup.
@@ -180,4 +217,11 @@ function setModalData(data: election.ElectionDataInterface) {
 
     electionBackColorBtn.style.backgroundColor = data.backColor;
     electionTitleColorBtn.style.backgroundColor = data.fontColor;
+}
+
+function renderTemplate(template: string, data) {
+    // Search for substrings of the form {{attribute}} in template, and replace them with data.attribute.
+    return template.replace(/{{(\w+)}}/g, function (match, p1): string {
+        return data[p1] || match;
+    })
 }

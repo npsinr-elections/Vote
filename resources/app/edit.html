@@ -132,7 +132,7 @@
                 <div class='field'>
                     <p class='control'>
                         <div class="has-text-centered">
-                        <button id='saveEditElection' class="button is-success is-medium">
+                            <button id='saveEditElection' class="button is-success is-medium">
                             <span class="icon">
                                 <i class="typcn typcn-edit"></i>
                             </span>
@@ -152,18 +152,60 @@
                 <h2 class="subtitle">Add new offices/posts to hold elections for.</h2>
             </div>
             <hr>
+            <div id="offices">
+            </div>
+            <br />
             <div class="has-text-centered">
-            <a id="addOficeBtn" class="button is-success">
-                <span class="icon">
+                <a id="addOfficeBtn" class="button is-success">
+                    <span class="icon">
                     <i class="typcn typcn-document-add"></i>
                 </span>
-                <span>Add New Office</span>
-            </a>
+                    <span>Add New Office</span>
+                </a>
             </div>
-        </div>
     </section>
+
+    <script id="officeTemplate" type="text/template">
+        <div class="card">
+            <div class="card-content">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-48x48">
+                            <img src="{{image}}" alt="Image">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p id="{{id}}-name"class="title is-3">{{name}}</p>
+                    </div>
+                </div>
+                <div id="{{id}}-description" class="content">
+                    {{description}}
+                </div>
+            </div>
+            <footer class="card-footer">
+                <a onclick="controls.editOffice('{{id}}');" class="card-footer-item">
+                    <span class="icon">
+                                <i class="typcn typcn-edit"></i>
+                            </span>
+                    <span>Edit Office</span>
+                </a>
+                <a onclick="deleteOffice('{{id}}')" class="card-footer-item">
+                    <span class="icon">
+                                <i class="typcn typcn-trash"></i>
+                            </span>
+                    <span>Delete Office</span>
+                </a>
+                <a onclick="candidateModal('{{id}}')" class="card-footer-item">
+                    <span class="icon">
+                                <i class="typcn typcn-user"></i>
+                            </span>
+                    <span>Candidate List</span>
+                </a>
+            </footer>
+        </div>
+    </script>
     <script>
-        require('./js/edit.js');
+        var controls = require('./js/edit.js');
     </script>
     <script src='./js/jscolor.min.js'></script>
 </body>
