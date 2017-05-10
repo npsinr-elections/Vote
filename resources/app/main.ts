@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import * as path from "path";
 import * as url from "url";
+import * as shortid from "shortid";
 import * as election from "./model/election";
 import * as fileManager from "./model/fileManager"
 
@@ -52,7 +53,7 @@ app.on('window-all-closed', () => {
 })
 
 ipcMain.on('newElection', (event, arg: election.newElectionInterface) => {
-  let loadData: election.ElectionDataInterface = election.initNewElection(arg, appData, appDataFile);
+  let loadData: election.ElectionDataInterface = initNewElection(arg, appData, appDataFile);
   let loadAsk = dialog.showMessageBox({ type: 'info', message: 'Election Created Succesfully!', buttons: ['Yes', 'No'], detail: 'Do you want to load your new election?' })
   if (loadAsk == 0) {
     loadElectionWindow(loadData);
@@ -120,4 +121,25 @@ function loadElectionWindow(arg: election.ElectionDataInterface) {
       loadedElection = null;
     })
   }
+}
+
+function initNewElection(data: election.newElectionInterface, appData: election.appDataInterface, appDataFile: string): election.ElectionDataInterface {
+    let { dataFile, imageDir, randomDir } = fileManager.newElectionData();
+
+    let electionId: string = shortid.generate();
+
+    data['id'] = electionId
+    data['dataDirectory'] = randomDir;
+    data['dataFile'] = dataFile;
+    data['imageData'] = imageDir;
+    data['offices'] = [];
+
+    appData.elections.push({ name: data.name, id: electionId, dataDirectory: randomDir, dataFile: dataFile })
+    fileManager.writeJSONData(appDataFile, appData);
+
+    fileManager.writeJSONData(dataFile, data);
+    let newImagePath = fileManager.storeImageData(data.image, imageDir);
+    data.image = newImagePath;
+
+    return <election.ElectionDataInterface>data;
 }
