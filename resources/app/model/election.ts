@@ -1,8 +1,4 @@
 'use strict';
-import * as shortid from "shortid";
-import * as fs from "fs";
-import * as path from "path";
-import * as fileManager from "./fileManager";
 
 class Election {
     offices: Office[];
@@ -49,27 +45,6 @@ class Candidate {
     }
 }
 
-export function initNewElection(data: newElectionInterface, appData: appDataInterface, appDataFile: string): ElectionDataInterface {
-    let { dataFile, imageDir, randomDir } = fileManager.newElectionData();
-
-    let electionId: string = shortid.generate();
-
-    data['id'] = electionId
-    data['dataDirectory'] = randomDir;
-    data['dataFile'] = dataFile;
-    data['imageData'] = imageDir;
-    data['offices'] = [];
-
-    appData.elections.push({ name: data.name, id: electionId, dataDirectory: randomDir, dataFile: dataFile })
-    fileManager.writeJSONData(appDataFile, appData);
-
-    fileManager.writeJSONData(dataFile, data);
-    let newImagePath = fileManager.storeImageData(data.image, imageDir);
-    data.image = newImagePath;
-
-    return <ElectionDataInterface>data;
-}
-
 export function getElectionById(id: string, appData:appDataInterface) {
   for (let i = 0; i < appData.elections.length; i++) {
     if (appData.elections[i].id == id) {
@@ -79,6 +54,14 @@ export function getElectionById(id: string, appData:appDataInterface) {
   return false;
 }
 
+export function getOfficeById(id:string, offices:officeDataInterface[]) {
+    for (let i=0; i<offices.length; i++) {
+        if (offices[i].id == id) {
+            return <officeDataInterface>offices[i]
+        }
+    }
+    return false;
+}
 export interface newElectionInterface {
     // Describes a newly created election object
     name: string;
@@ -88,12 +71,16 @@ export interface newElectionInterface {
     fontColor: string;
 }
 
+export interface officeDataInterface extends newElectionInterface{
+    id:string;
+}
+
 export interface ElectionDataInterface extends newElectionInterface {
     id: string;
     imageData: string;
     dataFile: string;
     dataDirectory: string;
-    offices: Office[];
+    offices: officeDataInterface[];
 }
 
 export interface appDataInterface {
