@@ -9,33 +9,50 @@ import { app } from 'electron';
 
 const dataPath: string = app.getPath('userData');
 
-export function newElectionData(): { randomDir: string, imageDir: string, dataFile: string } {
+export function newElectionData(): { randomDir: string, imageDir: string, dataFile: string, imageData: string } {
     let randomDir: string = shortid.generate();
     let imageDir: string = path.join(randomDir, shortid.generate());
     let dataFile: string = path.join(randomDir, shortid.generate());
+    let imageData: string = path.join(randomDir, shortid.generate());
 
     fs.mkdirSync(path.join(dataPath, randomDir));
     fs.mkdirSync(path.join(dataPath, imageDir));
 
-    return { 'randomDir': randomDir, 'imageDir': imageDir, 'dataFile': dataFile };
+    return { 'randomDir': randomDir, 'imageDir': imageDir, 'dataFile': dataFile, 'imageData': imageData };
 }
 
 export function saveElectionData(data: election.ElectionDataInterface, appData: election.appDataInterface, appDataFile: string) {
     // Read the old data, important for configuring image saves
-    let oldData = <election.ElectionDataInterface>readJSONData(data.dataFile);
+    let imageData: any = readJSONData(data.imageData);
+    let foundIds = [];
 
-    if (oldData.image !== data.image) {
-        fs.removeSync(oldData.image);
-        let newImagePath = storeImageData(data.image, data.imageData);
-        data.image = newImagePath;
-        console.log('Saved a new image')
-    } else {
-        console.log('Skipping image re-save.')
+    updateObjectImage(data, imageData, data.imageDir);
+    foundIds.push(data.id);
+
+    for (let i = 0; i < data.offices.length; i++) {
+        let office = data.offices[i]
+        updateObjectImage(office, imageData, data.imageDir);
+        foundIds.push(office.id);
+
+        for (let j = 0; j < office.candidates.length; j++) {
+            let candidate = office.candidates[j];
+            updateObjectImage(candidate, imageData, data.imageDir);
+            foundIds.push(candidate.id);
+        }
+    }
+
+    for (let key in imageData) {
+        if (imageData.hasOwnProperty(key)) {
+            if (foundIds.indexOf(key) == -1) {
+                fs.removeSync(path.join(dataPath, data.imageDir, imageData[key]));
+                delete imageData[key];
+            }
+        }
     }
 
     writeJSONData(data.dataFile, data);
+    writeJSONData(data.imageData, imageData);
 
-    // Election Object HAS to exist, no need for false-checking.
     let electionObj = <election.electionObject>election.getElectionById(data.id, appData);
 
     if (electionObj.name !== data.name) {
@@ -46,6 +63,27 @@ export function saveElectionData(data: election.ElectionDataInterface, appData: 
     return "Saved"
 }
 
+function updateObjectImage(data: { id: string, image: string, [propname: string]: any }, imageData: object, imageDir: string) {
+    let saveNewImage: boolean = false;
+    console.log(data);
+    if (!imageData.hasOwnProperty(data.id)) {
+        // Newly Created object, copy the new image:
+        saveNewImage = true;
+    } else {
+        // Editing an already created object, check whether image has changed or not.
+        if (imageData[data.id] !== path.basename(data.image)) {
+            fs.removeSync(path.join(dataPath, imageDir, imageData[data.id])); // Remove old image
+            saveNewImage = true;
+        }
+    }
+
+    if (saveNewImage) {
+        let newImagePath = storeImageData(data.image, imageDir);
+        data.image = newImagePath;
+        imageData[data.id] = path.basename(newImagePath);
+    }
+}
+
 export function storeImageData(image: string, imageDir: string) {
     //Note that imagePath has dataPATH INCLUDED, for benefit of the render process to directly link images in <img src='' />
     let newImageName: string = shortid.generate() + path.extname(image)
@@ -53,6 +91,7 @@ export function storeImageData(image: string, imageDir: string) {
     fs.copySync(image, newImagePath);
     return newImagePath;
 }
+
 export function writeJSONData(dataFile: string, data: object) {
     let json: string = JSON.stringify(data);
     fs.writeFileSync(path.join(dataPath, dataFile), json, 'utf-8');

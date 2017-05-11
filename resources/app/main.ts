@@ -92,6 +92,7 @@ ipcMain.on('deleteElection', (event, arg: string) => {
   }
 })
 
+
 function loadElectionWindow(arg: election.ElectionDataInterface) {
   if (editElections) {
     if (arg.id == loadedElection.id) {
@@ -124,22 +125,28 @@ function loadElectionWindow(arg: election.ElectionDataInterface) {
 }
 
 function initNewElection(data: election.newElectionInterface, appData: election.appDataInterface, appDataFile: string): election.ElectionDataInterface {
-    let { dataFile, imageDir, randomDir } = fileManager.newElectionData();
+    let { dataFile, imageDir, randomDir, imageData } = fileManager.newElectionData();
 
     let electionId: string = shortid.generate();
 
     data['id'] = electionId
     data['dataDirectory'] = randomDir;
     data['dataFile'] = dataFile;
-    data['imageData'] = imageDir;
+    data['imageDir'] = imageDir;
+    data['imageData'] = imageData;
     data['offices'] = [];
 
     appData.elections.push({ name: data.name, id: electionId, dataDirectory: randomDir, dataFile: dataFile })
     fileManager.writeJSONData(appDataFile, appData);
 
-    fileManager.writeJSONData(dataFile, data);
     let newImagePath = fileManager.storeImageData(data.image, imageDir);
     data.image = newImagePath;
+    fileManager.writeJSONData(dataFile, data);
+
+    let imageDataJSON = {}
+    imageDataJSON[electionId] = path.basename(newImagePath);
+
+    fileManager.writeJSONData(imageData, imageDataJSON);
 
     return <election.ElectionDataInterface>data;
 }

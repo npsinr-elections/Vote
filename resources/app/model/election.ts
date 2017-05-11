@@ -93,7 +93,8 @@ export interface candidateDataInterface {
 
 export interface ElectionDataInterface extends newElectionInterface {
     id: string;
-    imageData: string;
+    imageDir: string;
+    imageData:string;
     dataFile: string;
     dataDirectory: string;
     offices: officeDataInterface[];
