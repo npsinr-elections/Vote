@@ -1,6 +1,14 @@
-.electionImage {
-    width:256px;
-    height:256px;
+.electionImage > img {
+    width:auto;
+    height:128px;
     margin-left: auto;
     margin-right:auto;
+}
+
+.candidate-name {
+    padding:20px;
+}
+
+.candidateImage {
+    padding-top: 15px;
 }

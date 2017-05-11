@@ -62,6 +62,15 @@ export function getOfficeById(id:string, offices:officeDataInterface[]) {
     }
     return false;
 }
+
+export function getCandidateById(id:string, office:officeDataInterface) {
+    for (let i=0; i<office.candidates.length; i++) {
+        if (office.candidates[i].id == id) {
+            return <candidateDataInterface>office.candidates[i]
+        }
+    }
+    return false;
+}
 export interface newElectionInterface {
     // Describes a newly created election object
     name: string;
@@ -73,6 +82,13 @@ export interface newElectionInterface {
 
 export interface officeDataInterface extends newElectionInterface{
     id:string;
+    candidates: candidateDataInterface[];
+}
+
+export interface candidateDataInterface {
+    id:string;
+    name:string;
+    image:string;
 }
 
 export interface ElectionDataInterface extends newElectionInterface {
