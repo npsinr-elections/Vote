@@ -31,6 +31,10 @@ let imageInput = <HTMLInputElement>document.getElementById('imageInput');
 let imagePreview = document.getElementById('electionPreview');
 let imagePreviewImg = <HTMLImageElement>imagePreview.firstElementChild;
 
+// Controls in the popup to change the Back Colour, and font colour.
+let titleColorBtn = document.getElementById('titleColorBtn');
+let backColorBtn = document.getElementById('backColorBtn');
+
 // Open file explorer window to select image.
 imageBtn.addEventListener('click', () => {
     let imagePath: string[] = dialog.showOpenDialog({
@@ -84,6 +88,12 @@ function resetAllFields() {
 
     imagePreview.style.display = "none";
     imagePreviewImg.src = '';
+
+    titleColorBtn.style.backgroundColor = '';
+    titleColorBtn.style.color = '';
+
+    backColorBtn.style.backgroundColor = '';
+    backColorBtn.style.color = '';
 }
 // Container Div which has the list of elections.
 let electionListContainer = document.getElementById('electionsList');

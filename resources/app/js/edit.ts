@@ -205,7 +205,10 @@ function resetEditElectionModal() {
     electionImage.src = '';
 
     electionBackColorBtn.style.backgroundColor = '';
+    electionBackColorBtn.style.color = '';
+
     electionTitleColorBtn.style.backgroundColor = '';
+    electionTitleColorBtn.style.color = '';
 }
 
 // Open the popup modal.
