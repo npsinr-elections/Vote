@@ -1,5 +1,5 @@
 {
-  "name": "vote",
+  "name": "Vote",
   "version": "0.0.1",
   "description": "An applications to host elections on a local server.",
   "main": "./main.js",
