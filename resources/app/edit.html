@@ -12,13 +12,13 @@
     <section class="hero is-info is-medium">
         <div class="hero-body">
             <div class="container">
-                <h1 id="election-title" class="title">
+                <h1 class="title electionTitle">
                     Edit Elections
                 </h1>
-                <h2 id="election-subtitle" class="subtitle">
+                <h2 class="subtitle electionSubTitle">
                     Loading Data......
                 </h2>
-                <a id="editElectionBtn" class="button is-warning">
+                <a class="button is-warning editElectionBtn">
                     <span class="icon">
                             <i class="typcn typcn-edit"></i>
                         </span>
@@ -240,7 +240,7 @@
     </section>
 
     <script id="officeTemplate" type="text/template">
-        <div class="card">
+        <div id="{{id}}" class="card">
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
@@ -257,19 +257,19 @@
                 </div>
             </div>
             <footer class="card-footer">
-                <a onclick="controls.editOffice(this,'{{id}}');" class="card-footer-item">
+                <a id = "{{id}}-edit" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-edit"></i>
                             </span>
                     <span>Edit Office</span>
                 </a>
-                <a onclick="controls.deleteOffice(this,'{{id}}')" class="card-footer-item">
+                <a id= "{{id}}-delete" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-trash"></i>
                             </span>
                     <span>Delete Office</span>
                 </a>
-                <a onclick="controls.openCandidatesModal(this,'{{id}}')" class="card-footer-item">
+                <a id="{{id}}-candidates" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-user"></i>
                             </span>

@@ -45,17 +45,17 @@ class Candidate {
     }
 }
 
-export function getElectionById(id: string, appData:appDataInterface) {
-  for (let i = 0; i < appData.elections.length; i++) {
-    if (appData.elections[i].id == id) {
-      return appData.elections[i]
+export function getElectionById(id: string, appData: appDataInterface) {
+    for (let i = 0; i < appData.elections.length; i++) {
+        if (appData.elections[i].id == id) {
+            return appData.elections[i]
+        }
     }
-  }
-  return false;
+    return false;
 }
 
-export function getOfficeById(id:string, offices:officeDataInterface[]) {
-    for (let i=0; i<offices.length; i++) {
+export function getOfficeById(id: string, offices: officeDataInterface[]) {
+    for (let i = 0; i < offices.length; i++) {
         if (offices[i].id == id) {
             return <officeDataInterface>offices[i]
         }
@@ -63,8 +63,8 @@ export function getOfficeById(id:string, offices:officeDataInterface[]) {
     return false;
 }
 
-export function getCandidateById(id:string, office:officeDataInterface) {
-    for (let i=0; i<office.candidates.length; i++) {
+export function getCandidateById(id: string, office: officeDataInterface) {
+    for (let i = 0; i < office.candidates.length; i++) {
         if (office.candidates[i].id == id) {
             return <candidateDataInterface>office.candidates[i]
         }
@@ -80,33 +80,57 @@ export interface newElectionInterface {
     fontColor: string;
 }
 
-export interface officeDataInterface extends newElectionInterface{
-    id:string;
+export interface officeDataInterface extends newElectionInterface {
+    id: string;
     candidates: candidateDataInterface[];
 }
 
 export interface candidateDataInterface {
-    id:string;
-    name:string;
-    image:string;
+    id: string;
+    name: string;
+    image: string;
 }
 
 export interface ElectionDataInterface extends newElectionInterface {
     id: string;
     imageDir: string;
-    imageData:string;
+    imageData: string;
     dataFile: string;
     dataDirectory: string;
     offices: officeDataInterface[];
 }
 
 export interface appDataInterface {
-    elections:  electionObject[];
+    elections: electionObject[];
 }
 
 export interface electionObject {
-    name: string; 
-    id: string; 
-    dataDirectory: string; 
+    name: string;
+    id: string;
+    dataDirectory: string;
     dataFile: string;
+}
+
+export interface popupControls {
+    modal: HTMLElement;
+    openBtn: HTMLElement;
+    closeBtn: HTMLElement;
+}
+
+export interface candListPopupControls extends popupControls {
+    addCandidateBtn : HTMLElement;
+}
+
+export interface editControls extends popupControls {
+    saveBtn: HTMLElement;
+    inputFields: HTMLCollection;
+    imageInputField: HTMLInputElement;
+    imagePreview: HTMLElement;
+    imageBtn: HTMLElement;
+    colorBtns?: HTMLElement[];
+}
+
+export interface popupHeadings {
+    infoInputHeading:HTMLElement,
+    electionModalTitle:HTMLElement
 }
