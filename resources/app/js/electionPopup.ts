@@ -64,7 +64,7 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
             this.saveInputData();
         })
 
-        openBtn.addEventListener('click', ()=> {
+        openBtn.addEventListener('click', () => {
             this.openPopup();
         })
 
@@ -227,7 +227,7 @@ export class editElectionPopup extends DataPopup<election.ElectionDataInterface>
     }
 
     updateInterface() {
-        this.electionCard.updateInterface(this.electionData.name, this.electionData.description);
+        this.electionCard.updateInterface();
     }
 }
 
@@ -260,7 +260,7 @@ class newOfficePopup extends DataPopup<election.officeDataInterface> { // any be
     }
 
     updateInterface() {
-        createOfficeCard(this.electionData,
+        let createNewOfficeCard = new OfficeCard(this.electionData,
             this.officeContainer,
             this.officeTemplate,
             this.modalData,
@@ -279,53 +279,6 @@ class newOfficePopup extends DataPopup<election.officeDataInterface> { // any be
 
 function newOfficeObject(): election.officeDataInterface {
     return { id: '', name: '', description: '', image: '', backColor: '', fontColor: '', candidates: [] };
-}
-
-function createOfficeCard(electionData: election.ElectionDataInterface,
-    officeContainer: HTMLElement,
-    officeTemplate: string,
-    officeData: election.officeDataInterface,
-    editControls: election.editControls,
-    popupHeadings: election.popupHeadings,
-    candListPopupControls: election.popupControls,
-    candListTitle: HTMLElement,
-    candPopupControls: election.editControls,
-    candTitle: HTMLElement,
-    candidateContainer: HTMLElement,
-    candidateTemplate: string) {
-
-    officeContainer.innerHTML += renderTemplate(officeTemplate, officeData);
-
-    // Create the new Office Card Object.
-    let officeCard = new OfficeCard(officeData.id);
-
-    // Handles for Editing the Office
-    let editControlsCopy = { ...editControls }; // Create a shallow copy to prevent mutability problems.
-    editControlsCopy.openBtn = officeCard.editBtn;
-
-    let thisOfficePopup = new editOfficePopup(electionData,
-        officeData,
-        popupHeadings,
-        editControlsCopy,
-        officeCard);
-
-    // Handle for deleting the office.
-    officeCard.deleteBtn.addEventListener('click', () => {
-        electionData.offices.splice(electionData.offices.indexOf(officeData), 1);
-    })
-
-    // Handles for viewing the candidates of the office
-    let candListPopupControlsCopy = { ...candListPopupControls };
-    candListPopupControlsCopy.openBtn = officeCard.candidatesBtn;
-
-    let thisOfficeCandidatesPopup = new candidatesListPopup(electionData,
-        officeData,
-        candListTitle,
-        candListPopupControlsCopy,
-        candTitle,
-        candPopupControls,
-        candidateContainer,
-        candidateTemplate);
 }
 
 function newCandidateObject(): election.candidateDataInterface {
@@ -371,13 +324,13 @@ class candidatesListPopup { // A special popup for showing a list of candidates 
     setModalData() {
         this.candidateContainer.innerHTML = "";
         for (let i = 0; i < this.modalData.length; i++) {
-            createCandidateCard(this.electionData,
-            this.candidateContainer,
-            this.candidateTemplate,
-            this.officeData,
-            this.modalData[i],
-            this.candPopupControls,
-            this.candTitle)
+            new CandidateCard(this.electionData,
+                this.candidateContainer,
+                this.candidateTemplate,
+                this.officeData,
+                this.modalData[i],
+                this.candPopupControls,
+                this.candTitle)
 
         }
     }
@@ -405,42 +358,18 @@ class newCandidatePopup extends Popup<election.candidateDataInterface> {
     }
 
     updateInterface() {
-        createCandidateCard(this.electionData,
-        this.candidateContainer,
-        this.candidateTemplate,
-        this.officeData,
-        this.modalData,
-        this.editControls,
-        this.candTitle)
+        new CandidateCard(this.electionData,
+            this.candidateContainer,
+            this.candidateTemplate,
+            this.officeData,
+            this.modalData,
+            this.editControls,
+            this.candTitle)
 
         this.modalData = newCandidateObject();
     }
 }
 
-function createCandidateCard(electionData: election.ElectionDataInterface,
-    candidateContainer: HTMLElement,
-    candidateTemplate: string,
-    officeData: election.officeDataInterface,
-    candidateData: election.candidateDataInterface,
-    editControls: election.editControls,
-    candTitle: HTMLElement) {
-    candidateContainer.innerHTML += renderTemplate(candidateTemplate, candidateData);
-
-    let candidateCard = new CandidateCard(candidateData.id);
-
-    let editControlsCopy = { ...editControls };
-    editControlsCopy.openBtn = candidateCard.editBtn;
-
-    let thisCandidatePopup = new editCandidatePopup(electionData,
-        candidateData,
-        candTitle,
-        editControlsCopy,
-        candidateCard)
-
-    candidateCard.deleteBtn.addEventListener('click', () => {
-        officeData.candidates.splice(officeData.candidates.indexOf(candidateData), 1);
-    })
-}
 class editCandidatePopup extends Popup<election.candidateDataInterface> {
     constructor(electionData: election.ElectionDataInterface,
         modalData: election.candidateDataInterface,
@@ -451,7 +380,7 @@ class editCandidatePopup extends Popup<election.candidateDataInterface> {
     }
 
     updateInterface() {
-        this.candidateCard.updateInterface(this.modalData.name);
+        this.candidateCard.updateInterface();
     }
 }
 
@@ -460,19 +389,21 @@ class Card {
     private name: HTMLElement;
     public editBtn: HTMLElement;
 
-    constructor(id: string) {
-        this.card = document.getElementById(id);
-        this.name = document.getElementById(id + '-name');
+    constructor(private cardData: election.officeDataInterface | election.candidateDataInterface, container: HTMLElement, template: string) {
+        this.card = document.getElementById(cardData.id);
+        this.name = document.getElementById(cardData.id + '-name');
 
-        this.editBtn = document.getElementById(id + '-edit');
+        this.editBtn = document.getElementById(cardData.id + '-edit');
+
+        container.innerHTML += renderTemplate(template, cardData);
     }
 
-    updateInterface(name, ...args: string[]) {
-        this.name.innerHTML = name;
-        this.updateSpecifics(...args)
+    updateInterface() {
+        this.name.innerHTML = this.cardData.name;
+        this.updateSpecifics()
     }
 
-    updateSpecifics(...args: string[]) {
+    updateSpecifics() {
 
     }
 }
@@ -482,30 +413,74 @@ class OfficeCard extends Card {
     public candidatesBtn: HTMLElement;
     private description: HTMLElement;
 
-    constructor(id: string) {
-        super(id);
-        this.deleteBtn = document.getElementById(id + '-delete');
-        this.candidatesBtn = document.getElementById(id + '-candidates');
-        this.description = document.getElementById(id + '-description');
+    constructor(electionData: election.ElectionDataInterface,
+        officeContainer: HTMLElement,
+        officeTemplate: string,
+        private officeData: election.officeDataInterface,
+        editControls: election.editControls,
+        popupHeadings: election.popupHeadings,
+        candListPopupControls: election.popupControls,
+        candListTitle: HTMLElement,
+        candPopupControls: election.editControls,
+        candTitle: HTMLElement,
+        candidateContainer: HTMLElement,
+        candidateTemplate: string) {
+
+        super(officeData, officeContainer, officeTemplate);
+
+        this.deleteBtn = document.getElementById(officeData.id + '-delete'); // Delete Office Button
+        this.candidatesBtn = document.getElementById(officeData.id + '-candidates'); // View Candidates Button
+
+        this.description = document.getElementById(officeData.id + '-description'); // The description of the office.
+
+        // Handles for Editing the Office
+        let editControlsCopy = { ...editControls }; // Create a shallow copy to prevent mutability problems.
+        editControlsCopy.openBtn = this.editBtn;
+
+        let thisOfficePopup = new editOfficePopup(electionData,
+            officeData,
+            popupHeadings,
+            editControlsCopy,
+            this);
+
+        // Handle for deleting the office.
+        this.deleteBtn.addEventListener('click', () => {
+            electionData.offices.splice(electionData.offices.indexOf(officeData), 1);
+        })
+
+        // Handles for viewing the candidates of the office
+        let candListPopupControlsCopy = { ...candListPopupControls };
+        candListPopupControlsCopy.openBtn = this.candidatesBtn;
+
+        let thisOfficeCandidatesPopup = new candidatesListPopup(electionData,
+            officeData,
+            candListTitle,
+            candListPopupControlsCopy,
+            candTitle,
+            candPopupControls,
+            candidateContainer,
+            candidateTemplate);
     }
 
-    updateSpecifics(description) {
-        this.description = description;
+    updateSpecifics() {
+        this.description.innerHTML = this.officeData.description;
     }
 
 
 }
 
-export class ElectionCard extends Card {
+export class ElectionCard {
     private description: HTMLElement;
 
-    constructor(id: string) {
-        super(id);
-        this.description = document.getElementById(id + '-description');
+    constructor(private electionData: election.ElectionDataInterface,
+        private electionName: HTMLElement,
+        private electionDescription: HTMLElement) {
+        this.updateInterface();
     }
 
-    updateSpecifics(description) {
-        this.description = description;
+    updateInterface() {
+        this.electionName.innerHTML = this.electionData.name;
+        this.electionDescription.innerHTML = this.electionData.description;
     }
 
 
@@ -514,9 +489,34 @@ export class ElectionCard extends Card {
 class CandidateCard extends Card {
     public deleteBtn: HTMLElement;
 
-    constructor(id: string) {
-        super(id);
-        this.deleteBtn = document.getElementById(id + '-delete');
+    constructor(electionData: election.ElectionDataInterface,
+        candidateContainer: HTMLElement,
+        candidateTemplate: string,
+        officeData: election.officeDataInterface,
+        private candidateData: election.candidateDataInterface,
+        editControls: election.editControls,
+        candTitle: HTMLElement) {
+
+        super(candidateData, candidateContainer, candidateTemplate)
+
+        this.deleteBtn = document.getElementById(candidateData.id + '-delete');
+
+        let editControlsCopy = { ...editControls };
+        editControlsCopy.openBtn = this.editBtn;
+
+        let thisCandidatePopup = new editCandidatePopup(electionData,
+            candidateData,
+            candTitle,
+            editControlsCopy,
+            this)
+
+        this.deleteBtn.addEventListener('click', () => {
+            officeData.candidates.splice(officeData.candidates.indexOf(candidateData), 1);
+        })
+    }
+
+    updateSpecifics() {
+        // No specifics for candidates, just the name!
     }
 
 }
@@ -539,7 +539,7 @@ class editOfficePopup extends DataPopup<election.officeDataInterface> {
     }
 
     updateInterface() {
-        this.officeCard.updateInterface(this.modalData.name, this.modalData.description);
+        this.officeCard.updateInterface();
     }
 }
 
