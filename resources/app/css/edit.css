@@ -1,8 +1,9 @@
-.electionImage > img {
-    width:auto;
-    height:128px;
+.electionImage {
+    width:256px;
+    height:256px;
     margin-left: auto;
     margin-right:auto;
+    overflow:hidden; /* To previent weird bug of some images not aligning correctly and overflowing */
 }
 
 .candidate-name {

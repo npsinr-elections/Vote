@@ -3,32 +3,6 @@ import * as shortid from 'shortid';
 const { remote, ipcRenderer }: { remote: Electron.Remote, ipcRenderer: Electron.IpcRenderer } = require('electron')
 const { dialog }: { dialog: Electron.Dialog } = remote;
 
-function openImageSelect() {
-    let imagePath: string[] = dialog.showOpenDialog({
-        properties: ['openFile'],
-        filters: [
-            { name: 'Images', extensions: ['jpg', 'png', 'gif'] }
-        ]
-    })
-    return imagePath;
-}
-
-// Decide whether to preview the image or hide in case no image is was selected.
-function previewImage(imagePath, imagePreview, imageInput, initalValue = '') {
-    let previewImage = imagePreview.firstElementChild;
-    if (typeof imagePath != 'undefined') {
-        imageInput.value = imagePath[0];
-        previewImage.src = imagePath[0];
-        imagePreview.style.display = 'block';
-    } else {
-        imageInput.value = initalValue;
-        if (initalValue == '' || initalValue == undefined) {
-            imagePreview.style.display = 'none';
-        }
-        previewImage.src = initalValue;
-    }
-}
-
 export class Popup<T extends election.ElectionDataInterface | election.officeDataInterface | election.candidateDataInterface> {
     protected imgElem: HTMLImageElement;
     private modal: HTMLElement;
@@ -36,70 +10,72 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
     private closeBtn: HTMLElement;
     protected saveBtn: HTMLElement;
     private inputFields: HTMLCollection;
-    private imageInputField: HTMLInputElement;
     private imagePreview: HTMLElement;
     private colorBtns: HTMLElement[];
-    private imageBtn: HTMLElement;
+
+    private saveFunc: EventListenerOrEventListenerObject;
+    private openFunc: EventListenerOrEventListenerObject;
+    private closeFunc: EventListenerOrEventListenerObject;
 
     constructor(protected electionData: election.ElectionDataInterface,
         protected modalData: T,
-        { modal, openBtn, closeBtn, saveBtn, inputFields, imageInputField, imagePreview, colorBtns, imageBtn }: election.editControls) {
+        { modal, openBtn, closeBtn, saveBtn, imagePreview, inputFields, colorBtns }: election.editControls) {
 
         this.modal = modal;
         this.closeBtn = closeBtn;
         this.saveBtn = saveBtn;
         this.inputFields = inputFields;
-        this.imageInputField = imageInputField;
-        this.imagePreview = imagePreview;
         this.colorBtns = colorBtns;
-        this.imageBtn = imageBtn;
-
+        this.imagePreview = imagePreview;
+        this.openBtn = openBtn;
         this.imgElem = <HTMLImageElement>imagePreview.firstElementChild;
-        imageBtn.addEventListener('click', () => {
-            let imagePath: string[] = openImageSelect();
-            previewImage(imagePath, imagePreview, imageInputField, this.modalData.image);
-        })
 
-        saveBtn.addEventListener('click', () => {
-            this.saveInputData();
-        })
-
-        openBtn.addEventListener('click', () => {
-            this.openPopup();
-        })
-
-        closeBtn.addEventListener('click', () => {
-            this.togglePopup();
-        })
+        this.openFunc = this.openPopup.bind(this);
+        this.openBtn.addEventListener('click', this.openFunc);
     }
 
     private openPopup() {
         this.setHeadings(); // Set the text messages on the popup.
         this.setModalData(); // Set the text fields with data.
         this.togglePopup(); // Show the popup
+
+        // It is necessary to follow this structure of event listener binding,
+        // as the same popup DOM Object is being used for multiple tasks. Thus,
+        // each time a popup opens, it must bind the event listeners it needs,
+        // and when it closes, it must remove these as well.
+
+        this.saveFunc = this.saveInputData.bind(this);
+        this.closeFunc = this.closePopup.bind(this);
+        this.saveBtn.addEventListener('click', this.saveFunc);
+        this.closeBtn.addEventListener('click', this.closeFunc);
+    }
+
+    private closePopup() {
+        this.saveBtn.removeEventListener('click', this.saveFunc);
+        this.closeBtn.removeEventListener('click', this.closeFunc);
+        this.togglePopup()
     }
 
     protected setHeadings() {
 
     }
 
+    public cleanUp() {
+        // The newCandidate modal requires a clean up of its open event listener when the
+        // candidateList modal is closed.
+        this.openBtn.removeEventListener('click', this.openFunc);
+    }
+
     togglePopup() {
+        // This method takes advantage of the fact that the open modal buttons show only
+        // when the modal is closed, and the close modal button shows only when the modal button
+        // is showing. Thus it can be used as a dual purpose method, for opening and closing.
         this.modal.classList.toggle('is-active');
     }
 
-
-    resetData() {
+    setModalData() {
         let inputData: HTMLInputElement;
-
-        // Reset all the input Fields.
-        for (let i = 0; i < this.inputFields.length; i++) {
-            inputData = <HTMLInputElement>this.inputFields[i];
-            inputData.value = '';
-        }
-
-
-        this.imagePreview.style.display = 'none';
-        this.imgElem.src = '';
+        let changeEvent = new Event('input', { bubbles: true });
 
         // Reset the color picker buttons.
         if (this.colorBtns) {
@@ -108,11 +84,6 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
                 this.colorBtns[i].style.color = '';
             }
         }
-    }
-
-    setModalData() {
-        let inputData: HTMLInputElement;
-        let changeEvent = new Event('input', { bubbles: true });
 
         // Set the input data on each element, and fire the change event on each (Mainly for jscolor to update button style.)
         for (let i = 0; i < this.inputFields.length; i++) {
@@ -121,9 +92,13 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
             inputData.dispatchEvent(changeEvent);
         }
 
-
         this.imgElem.src = this.modalData.image;
-        this.imagePreview.style.display = 'block';
+
+        if (this.modalData.image !== '') {
+            this.imagePreview.style.display = 'block';
+        } else {
+            this.imagePreview.style.display = 'none';
+        }
     }
 
     getInputData() {
@@ -135,7 +110,7 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
             inputData = <HTMLInputElement>this.inputFields[i];
             if (inputData.value.replace(/\s/g, "").length == 0) {
                 dialog.showErrorBox("Some data wasn't entered...", 'Please fill all the fields!');
-                return;
+                return false;
             }
             collectData[inputData.name] = inputData.value;
         }
@@ -148,14 +123,17 @@ export class Popup<T extends election.ElectionDataInterface | election.officeDat
             }
         }
 
+        return true;
+
     }
 
     saveInputData() {
-        this.getInputData();
-        this.updateData();
-        saveElectionData(this.electionData);
-        this.updateInterface();
-        this.togglePopup(); // Close the popup
+        if (this.getInputData()) {
+            this.updateData();
+            saveElectionData(this.electionData);
+            this.updateInterface();
+            this.closePopup(); // Close the popup
+        }
     }
 
     updateData() {
@@ -183,6 +161,7 @@ function saveElectionData(electionData) {
     }
 }
 
+// The DataPopup class is a super class for election edit popups, new office popups, and edit office popups
 class DataPopup<K extends election.ElectionDataInterface | election.officeDataInterface> extends Popup<K> {
     private infoInputHeading: HTMLElement;
     private electionModalTitle: HTMLElement;
@@ -199,6 +178,8 @@ class DataPopup<K extends election.ElectionDataInterface | election.officeDataIn
             modalData,
             editControls);
 
+        this.infoInputHeading = infoInputHeading;
+        this.electionModalTitle = electionModalTitle;
     }
 
 
@@ -231,7 +212,7 @@ export class editElectionPopup extends DataPopup<election.ElectionDataInterface>
     }
 }
 
-class newOfficePopup extends DataPopup<election.officeDataInterface> { // any because a new office always initially has no data.
+export class newOfficePopup extends DataPopup<election.officeDataInterface> {
     constructor(electionData: election.ElectionDataInterface,
         private popupHeadings: election.popupHeadings,
         private editControls: election.editControls, // This class needs editControls to create editOfficePopup objects.
@@ -288,6 +269,8 @@ function newCandidateObject(): election.candidateDataInterface {
 class candidatesListPopup { // A special popup for showing a list of candidates for an office.
     private modalData: election.candidateDataInterface[];
     private newCandidatePopup: newCandidatePopup;
+    private closeFunc: EventListenerOrEventListenerObject;
+
     constructor(private electionData: election.ElectionDataInterface,
         private officeData: election.officeDataInterface,
         private candListTitle: HTMLElement,
@@ -300,17 +283,33 @@ class candidatesListPopup { // A special popup for showing a list of candidates 
         this.modalData = officeData.candidates;
 
         candListPopupControls.openBtn.addEventListener('click', () => {
-            this.setHeadings();
-            this.setModalData();
-            this.toggleModal();
+            this.openPopup();
         })
+    }
 
-        this.newCandidatePopup = new newCandidatePopup(electionData,
-            officeData,
-            candTitle,
-            candPopupControls,
-            candidateContainer,
-            candidateTemplate)
+    openPopup() {
+        this.setHeadings();
+        this.setModalData();
+
+        this.newCandidatePopup = new newCandidatePopup(this.electionData,
+            this.officeData,
+            this.candTitle,
+            this.candPopupControls,
+            this.candidateContainer,
+            this.candidateTemplate);
+
+        this.closeFunc = this.closePopup.bind(this);
+        this.candListPopupControls.closeBtn.addEventListener('click', this.closeFunc);
+
+        this.toggleModal();
+    }
+
+    closePopup() {
+        this.candListPopupControls.closeBtn.removeEventListener('click', this.closeFunc);
+        this.newCandidatePopup.cleanUp(); // Remove the addCandidate event listener.
+        this.newCandidatePopup = null; // Remove reference to newCandidatePopup.
+        this.toggleModal();
+        this.candidateContainer.innerHTML = ""; // Clear the candidatesContainer.
     }
 
     toggleModal() {
@@ -322,7 +321,6 @@ class candidatesListPopup { // A special popup for showing a list of candidates 
     }
 
     setModalData() {
-        this.candidateContainer.innerHTML = "";
         for (let i = 0; i < this.modalData.length; i++) {
             new CandidateCard(this.electionData,
                 this.candidateContainer,
@@ -384,23 +382,32 @@ class editCandidatePopup extends Popup<election.candidateDataInterface> {
     }
 }
 
+
 class Card {
-    private card: HTMLElement;
+    protected card: HTMLElement;
     private name: HTMLElement;
     public editBtn: HTMLElement;
+    private imageElem:HTMLImageElement;
 
-    constructor(private cardData: election.officeDataInterface | election.candidateDataInterface, container: HTMLElement, template: string) {
-        this.card = document.getElementById(cardData.id);
+    constructor(private cardData: election.officeDataInterface | election.candidateDataInterface, protected container: HTMLElement, template: string) {
+        let newCard = document.createElement('div');
+        newCard.id = cardData.id;
+        newCard.innerHTML = renderTemplate(template, cardData);
+
+        container.appendChild(newCard);
+
+        this.card = newCard;
+
         this.name = document.getElementById(cardData.id + '-name');
 
         this.editBtn = document.getElementById(cardData.id + '-edit');
-
-        container.innerHTML += renderTemplate(template, cardData);
+        this.imageElem = <HTMLImageElement>document.getElementById(cardData.id + '-image');
     }
 
     updateInterface() {
         this.name.innerHTML = this.cardData.name;
-        this.updateSpecifics()
+        this.imageElem.src = this.cardData.image;
+        this.updateSpecifics();
     }
 
     updateSpecifics() {
@@ -408,7 +415,7 @@ class Card {
     }
 }
 
-class OfficeCard extends Card {
+export class OfficeCard extends Card {
     public deleteBtn: HTMLElement;
     public candidatesBtn: HTMLElement;
     private description: HTMLElement;
@@ -426,6 +433,7 @@ class OfficeCard extends Card {
         candidateContainer: HTMLElement,
         candidateTemplate: string) {
 
+
         super(officeData, officeContainer, officeTemplate);
 
         this.deleteBtn = document.getElementById(officeData.id + '-delete'); // Delete Office Button
@@ -437,15 +445,29 @@ class OfficeCard extends Card {
         let editControlsCopy = { ...editControls }; // Create a shallow copy to prevent mutability problems.
         editControlsCopy.openBtn = this.editBtn;
 
+
         let thisOfficePopup = new editOfficePopup(electionData,
             officeData,
             popupHeadings,
             editControlsCopy,
             this);
 
+
         // Handle for deleting the office.
         this.deleteBtn.addEventListener('click', () => {
-            electionData.offices.splice(electionData.offices.indexOf(officeData), 1);
+            let confirm = dialog.showMessageBox({
+                type: 'warning',
+                buttons: ['Yes', 'No'],
+                title: 'Confirm Action',
+                message: 'Are you sure you want to delete the office: ' + officeData.name + '?',
+                detail: 'This action cannot be reversed.'
+            });
+
+            if (confirm == 0) {
+                electionData.offices.splice(electionData.offices.indexOf(officeData), 1);
+                this.container.removeChild(this.card);
+                saveElectionData(electionData);
+            }
         })
 
         // Handles for viewing the candidates of the office
@@ -469,18 +491,28 @@ class OfficeCard extends Card {
 
 }
 
-export class ElectionCard {
+export class ElectionCard { // The election card is a special card whose template has already been hardcoded in the DOM.
     private description: HTMLElement;
 
     constructor(private electionData: election.ElectionDataInterface,
         private electionName: HTMLElement,
-        private electionDescription: HTMLElement) {
+        private electionDescription: HTMLElement,
+        private electionImage:HTMLImageElement,
+        popupHeadings: election.popupHeadings,
+        editControls: election.editControls) {
+
+        let editInfo = new editElectionPopup(electionData,
+            popupHeadings,
+            editControls,
+            this)
+
         this.updateInterface();
     }
 
     updateInterface() {
         this.electionName.innerHTML = this.electionData.name;
         this.electionDescription.innerHTML = this.electionData.description;
+        this.electionImage.src = this.electionData.image;
     }
 
 
@@ -511,7 +543,19 @@ class CandidateCard extends Card {
             this)
 
         this.deleteBtn.addEventListener('click', () => {
-            officeData.candidates.splice(officeData.candidates.indexOf(candidateData), 1);
+            let confirm = dialog.showMessageBox({
+                type: 'warning',
+                buttons: ['Yes', 'No'],
+                title: 'Confirm Action',
+                message: 'Are you sure you want to remove: ' + candidateData.name + '?',
+                detail: 'This action cannot be reversed.'
+            });
+
+            if (confirm == 0) {
+                officeData.candidates.splice(officeData.candidates.indexOf(candidateData), 1);
+                this.container.removeChild(this.card);
+                saveElectionData(electionData);
+            }
         })
     }
 
@@ -536,6 +580,8 @@ class editOfficePopup extends DataPopup<election.officeDataInterface> {
             "What is this office called?", // inputHeadingMessage
             "Save changes", // saveButtonMessage
             editControls);
+
+        this.officeCard = officeCard;
     }
 
     updateInterface() {

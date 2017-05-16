@@ -12,13 +12,16 @@
     <section class="hero is-info is-medium">
         <div class="hero-body">
             <div class="container">
-                <h1 class="title electionTitle">
+                <figure class="image is-96x96">
+                    <img id="electionImage" src="{{image}}" alt="Image">
+                </figure>
+                <h1 id="electionTitle" class="title">
                     Edit Elections
                 </h1>
-                <h2 class="subtitle electionSubTitle">
+                <h2 id="electionSubTitle" class="subtitle">
                     Loading Data......
                 </h2>
-                <a class="button is-warning editElectionBtn">
+                <a id="editElectionBtn" class="button is-warning">
                     <span class="icon">
                             <i class="typcn typcn-edit"></i>
                         </span>
@@ -44,7 +47,7 @@
                     <div class='field-body'>
                         <div class='field'>
                             <p class='control'>
-                                <input name='name' class='input electionData' type="text" placeholder="Give a title for the elections" />
+                                <input name='name' class='input electionData' type="text" placeholder="A name that will show on the title page" />
                             </p>
                         </div>
                     </div>
@@ -73,10 +76,11 @@
                     <div class='field-body'>
                         <div class='field has-addons'>
                             <p class='control'>
-                                <input name='image' id='imageInput' class='input electionData' type="text" placeholder='A logo/small image' disabled />
+                                <input name='image' id='electionImageInput' class='input electionData' type="text" placeholder='A logo/small image' disabled
+                                />
                             </p>
                             <p class='control'>
-                                <button id='imageBtn' class='button is-primary'>
+                                <button id='electionImageBtn' class='button is-primary'>
                                     <span class="icon">
                                         <i class="typcn typcn-image"></i>
                                     </span>
@@ -178,7 +182,7 @@
                     <div class='field-body'>
                         <div class='field'>
                             <p class='control'>
-                                <input id="candidateName" name='name' class='input' type="text" placeholder="Name of the Candidate" />
+                                <input id="candidateName" name='name' class='input candidateData' type="text" placeholder="Name of the Candidate" />
                             </p>
                         </div>
                     </div>
@@ -193,7 +197,8 @@
                     <div class='field-body'>
                         <div class='field has-addons'>
                             <p class='control'>
-                                <input name='image' id='candidateImage' class='input' type="text" placeholder="Select the candidate's image" disabled />
+                                <input name='image' id='candidateImageInput' class='input candidateData' type="text" placeholder="Select the candidate's image"
+                                    disabled />
                             </p>
                             <p class='control'>
                                 <button id='candidateImageBtn' class='button is-primary'>
@@ -206,9 +211,9 @@
                         </div>
                     </div>
                 </div>
-                
+
             </section>
-             <footer class="modal-card-foot">
+            <footer class="modal-card-foot">
                 <button id='saveEditCandidate' class="button is-success is-medium">
                             <span class="icon">
                                 <i class="typcn typcn-edit"></i>
@@ -230,7 +235,7 @@
             </div>
             <br />
             <div class="has-text-centered">
-                <a id="addOfficeBtn" class="button is-success">
+                <a id="newOfficeBtn" class="button is-success">
                     <span class="icon">
                     <i class="typcn typcn-document-add"></i>
                 </span>
@@ -240,12 +245,12 @@
     </section>
 
     <script id="officeTemplate" type="text/template">
-        <div id="{{id}}" class="card">
+        <div class="card">
             <div class="card-content">
                 <div class="media">
                     <div class="media-left">
                         <figure class="image is-48x48">
-                            <img src="{{image}}" alt="Image">
+                            <img id="{{id}}-image" src="{{image}}" alt="Image">
                         </figure>
                     </div>
                     <div class="media-content">
@@ -257,13 +262,13 @@
                 </div>
             </div>
             <footer class="card-footer">
-                <a id = "{{id}}-edit" class="card-footer-item">
+                <a id="{{id}}-edit" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-edit"></i>
                             </span>
                     <span>Edit Office</span>
                 </a>
-                <a id= "{{id}}-delete" class="card-footer-item">
+                <a id="{{id}}-delete" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-trash"></i>
                             </span>
@@ -277,26 +282,26 @@
                 </a>
             </footer>
         </div>
-        <br>
+        <br />
     </script>
     <script id="candidateTemplate" type="text/template">
         <div class="card">
             <div class="card-image candidateImage">
                 <figure class="image electionImage">
-                    <img src="{{image}}" alt="Image">
+                    <img id="{{id}}-image" src="{{image}}" alt="Image">
                 </figure>
             </div>
             <div class="card-content candidate-name has-text-centered">
                 <p id="{{id}}-name" class="title is-4">{{name}}</p>
             </div>
             <footer class="card-footer">
-                <a onclick="controls.editCandidate(this,'{{id}}');" class="card-footer-item">
+                <a id="{{id}}-edit" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-edit"></i>
                             </span>
                     <span>Edit</span>
                 </a>
-                <a onclick="controls.deleteCandidate(this,'{{id}}')" class="card-footer-item">
+                <a id="{{id}}-delete" class="card-footer-item">
                     <span class="icon">
                                 <i class="typcn typcn-trash"></i>
                             </span>

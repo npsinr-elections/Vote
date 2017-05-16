@@ -117,16 +117,10 @@ export interface popupControls {
     closeBtn: HTMLElement;
 }
 
-export interface candListPopupControls extends popupControls {
-    addCandidateBtn : HTMLElement;
-}
-
 export interface editControls extends popupControls {
     saveBtn: HTMLElement;
     inputFields: HTMLCollection;
-    imageInputField: HTMLInputElement;
     imagePreview: HTMLElement;
-    imageBtn: HTMLElement;
     colorBtns?: HTMLElement[];
 }
 
